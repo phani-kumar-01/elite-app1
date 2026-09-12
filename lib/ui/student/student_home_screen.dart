@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../core/theme/app_theme.dart';
@@ -7,6 +7,7 @@ import '../../core/widgets/permission_dialog.dart';
 import '../../core/services/permission_service.dart';
 import '../../ui/features/contacts/contacts_screen.dart';
 import '../../state/app_state.dart';
+import 'team_registration_screen.dart';
 
 class StudentHomeScreen extends StatelessWidget {
   final Function(int)? onNavigateTab;
@@ -264,9 +265,9 @@ class StudentHomeScreen extends StatelessWidget {
               ),
               const SizedBox(height: 22),
 
-              // Quick Actions Grid (4 working cards)
+              // Quick Actions Grid (4 college event essentials)
               Text(
-                'Quick Actions',
+                'Quick Portals',
                 style: GoogleFonts.inter(
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
@@ -279,9 +280,27 @@ class StudentHomeScreen extends StatelessWidget {
                   Expanded(
                     child: _quickActionButton(
                       context,
-                      icon: Icons.qr_code,
-                      label: 'Lab QR Pass',
+                      icon: Icons.qr_code_2,
+                      label: 'Digital Pass',
                       onTap: () => QrPassDialog.show(context, user),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: _quickActionButton(
+                      context,
+                      icon: Icons.event,
+                      label: 'Events',
+                      onTap: () => onNavigateTab?.call(1),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: _quickActionButton(
+                      context,
+                      icon: Icons.poll_outlined,
+                      label: 'Active Polls',
+                      onTap: () => onNavigateTab?.call(2),
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -298,44 +317,32 @@ class StudentHomeScreen extends StatelessWidget {
                       },
                     ),
                   ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: _quickActionButton(
-                      context,
-                      icon: Icons.report_problem_outlined,
-                      label: 'Report Issue',
-                      onTap: () => _showReportIssueDialog(context),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: _quickActionButton(
-                      context,
-                      icon: Icons.terminal,
-                      label: 'Software',
-                      onTap: () => _showSoftwareHubModal(context),
-                    ),
-                  ),
                 ],
               ),
               const SizedBox(height: 24),
 
-              // Active Service Tickets
+              // Important College Announcements from Supabase
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    'Active Service Tickets',
-                    style: GoogleFonts.inter(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.onSurface,
-                    ),
+                  Row(
+                    children: [
+                      const Icon(Icons.campaign, color: AppColors.secondary, size: 20),
+                      const SizedBox(width: 6),
+                      Text(
+                        'College Announcements',
+                        style: GoogleFonts.inter(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.onSurface,
+                        ),
+                      ),
+                    ],
                   ),
                   TextButton(
-                    onPressed: () => _showReportIssueDialog(context),
+                    onPressed: () => onNavigateTab?.call(3),
                     child: Text(
-                      '+ New Ticket',
+                      'All Notices',
                       style: GoogleFonts.inter(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
@@ -346,15 +353,82 @@ class StudentHomeScreen extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 8),
-              ...state.tickets.map((t) => _ticketCard(t)),
-              const SizedBox(height: 22),
+              if (state.notifications.isEmpty)
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: AppColors.surface,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: AppColors.outline),
+                  ),
+                  child: Center(
+                    child: Text(
+                      'No active announcements from faculty.',
+                      style: GoogleFonts.inter(fontSize: 12, color: AppColors.onSurfaceVariant),
+                    ),
+                  ),
+                )
+              else
+                ...state.notifications.take(2).map((n) => Container(
+                      margin: const EdgeInsets.only(bottom: 8),
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: AppColors.surface,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: AppColors.outline),
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: AppColors.secondary.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: const Icon(Icons.notifications_active, color: AppColors.secondary, size: 18),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        n.title,
+                                        style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.onSurface),
+                                      ),
+                                    ),
+                                    Text(
+                                      n.timeAgo,
+                                      style: GoogleFonts.inter(fontSize: 10, color: AppColors.onSurfaceVariant),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  n.message,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: GoogleFonts.inter(fontSize: 11, color: AppColors.onSurfaceVariant),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    )),
+              const SizedBox(height: 20),
 
-              // Upcoming IT Workshops
+              // Upcoming Events & Symposia
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Upcoming IT Workshops',
+                    'Upcoming College Events',
                     style: GoogleFonts.inter(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
@@ -364,7 +438,7 @@ class StudentHomeScreen extends StatelessWidget {
                   TextButton(
                     onPressed: () => onNavigateTab?.call(1),
                     child: Text(
-                      'View All',
+                      'View All (${state.events.length})',
                       style: GoogleFonts.inter(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
@@ -375,69 +449,45 @@ class StudentHomeScreen extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 8),
-              ...state.events.take(2).map((e) => _eventWorkshopCard(context, e)),
-              const SizedBox(height: 24),
+              ...state.events.take(3).map((e) => _eventWorkshopCard(context, e)),
+              const SizedBox(height: 20),
 
-              // System Health Status Widget (Infrastructure & Network)
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: AppColors.surface,
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: AppColors.outline),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+              // Live Active Poll Spotlight
+              if (state.polls.isNotEmpty) ...[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Row(
-                          children: [
-                            Container(
-                              width: 8,
-                              height: 8,
-                              decoration: const BoxDecoration(
-                                color: AppColors.success,
-                                shape: BoxShape.circle,
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              'Campus IT Infrastructure',
-                              style: GoogleFonts.inter(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w700,
-                                color: AppColors.onSurface,
-                              ),
-                            ),
-                          ],
-                        ),
+                        const Icon(Icons.how_to_vote, color: AppColors.primary, size: 20),
+                        const SizedBox(width: 6),
                         Text(
-                          'All Systems Operational',
+                          'Live Student Poll',
                           style: GoogleFonts.inter(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w500,
-                            color: AppColors.success,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.onSurface,
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 16),
-                    const Divider(color: AppColors.outline, height: 1),
-                    const SizedBox(height: 14),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        _healthItem('Campus Wi-Fi', '99.9%', Icons.wifi),
-                        _healthItem('Internet Latency', '18ms', Icons.speed),
-                        _healthItem('Lab Cloud Rig', 'Online', Icons.cloud_done),
-                      ],
+                    TextButton(
+                      onPressed: () => onNavigateTab?.call(2),
+                      child: Text(
+                        'Polls Tab',
+                        style: GoogleFonts.inter(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.secondary,
+                        ),
+                      ),
                     ),
                   ],
                 ),
-              ),
-              const SizedBox(height: 24),
+                const SizedBox(height: 8),
+                _homePollCard(context, state.polls.first),
+                const SizedBox(height: 24),
+              ],
             ],
           ),
         ),
@@ -497,14 +547,24 @@ class StudentHomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _ticketCard(dynamic t) {
+  Widget _homePollCard(BuildContext context, PollModel poll) {
+    final state = context.watch<AppState>();
+    final hasVoted = poll.userVotedIndex != null;
+    final total = poll.totalVotes;
+
     return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(14),
         border: Border.all(color: AppColors.outline),
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 4,
+            offset: Offset(0, 1),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -512,49 +572,179 @@ class StudentHomeScreen extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(
+                  color: AppColors.surfaceContainerLow,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Text(
+                  poll.category.toUpperCase(),
+                  style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w700, color: AppColors.secondary),
+                ),
+              ),
               Row(
                 children: [
-                  StatusBadge.inProgress(t.status),
-                  const SizedBox(width: 8),
+                  const Icon(Icons.timer_outlined, size: 14, color: AppColors.onSurfaceVariant),
+                  const SizedBox(width: 4),
                   Text(
-                    t.id,
+                    poll.status,
+                    style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.onSurfaceVariant),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Text(
+            poll.question,
+            style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w700, color: AppColors.onSurface),
+          ),
+          const SizedBox(height: 12),
+          ...List.generate(poll.options.length, (idx) {
+            final option = poll.options[idx];
+            final isSelected = poll.userVotedIndex == idx;
+            final count = option.votes;
+            final pct = total > 0 ? (count / total * 100).round() : 0;
+
+            if (hasVoted) {
+              return Container(
+                margin: const EdgeInsets.only(bottom: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                decoration: BoxDecoration(
+                  color: isSelected
+                      ? AppColors.secondary.withValues(alpha: 0.08)
+                      : AppColors.surfaceContainerLow,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: isSelected ? AppColors.secondary : AppColors.outline,
+                    width: isSelected ? 1.5 : 1,
+                  ),
+                ),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            if (isSelected) ...[
+                              const Icon(Icons.check_circle, size: 16, color: AppColors.secondary),
+                              const SizedBox(width: 6),
+                            ],
+                            Text(
+                              option.text,
+                              style: GoogleFonts.inter(
+                                fontSize: 12,
+                                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                                color: isSelected ? AppColors.secondary : AppColors.onSurface,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Text(
+                          '$pct% ($count)',
+                          style: GoogleFonts.inter(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            color: isSelected ? AppColors.secondary : AppColors.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(4),
+                      child: LinearProgressIndicator(
+                        value: total > 0 ? count / total : 0,
+                        backgroundColor: AppColors.surfaceContainerHigh,
+                        color: isSelected ? AppColors.secondary : AppColors.primary,
+                        minHeight: 6,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
+
+            return InkWell(
+              onTap: () {
+                state.voteOnPoll(poll.id, idx);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Vote recorded for: ${option.text}'),
+                    backgroundColor: AppColors.success,
+                    duration: const Duration(seconds: 2),
+                  ),
+                );
+              },
+              borderRadius: BorderRadius.circular(8),
+              child: Container(
+                margin: const EdgeInsets.only(bottom: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                decoration: BoxDecoration(
+                  color: AppColors.surfaceContainerLow,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: AppColors.outline),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 16,
+                      height: 16,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(color: AppColors.outlineVariant, width: 1.5),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        option.text,
+                        style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.onSurface),
+                      ),
+                    ),
+                    const Icon(Icons.touch_app_outlined, size: 16, color: AppColors.onSurfaceVariant),
+                  ],
+                ),
+              ),
+            );
+          }),
+          const SizedBox(height: 4),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                '$total votes cast',
+                style: GoogleFonts.inter(fontSize: 11, color: AppColors.onSurfaceVariant),
+              ),
+              Row(
+                children: [
+                  const Icon(Icons.bolt, size: 12, color: AppColors.secondary),
+                  const SizedBox(width: 4),
+                  Text(
+                    hasVoted ? 'Vote Submitted' : 'Tap option to cast vote',
                     style: GoogleFonts.inter(
                       fontSize: 11,
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.onSurfaceVariant,
+                      fontWeight: FontWeight.w600,
+                      color: hasVoted ? AppColors.secondary : AppColors.onSurfaceVariant,
                     ),
                   ),
                 ],
               ),
-              Text(
-                t.updatedAt,
-                style: GoogleFonts.inter(fontSize: 11, color: AppColors.onSurfaceVariant),
-              ),
             ],
-          ),
-          const SizedBox(height: 8),
-          Text(
-            t.title,
-            style: GoogleFonts.inter(
-              fontSize: 13,
-              fontWeight: FontWeight.w700,
-              color: AppColors.onSurface,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            t.description,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: GoogleFonts.inter(fontSize: 12, color: AppColors.onSurfaceVariant),
           ),
         ],
       ),
     );
   }
 
-  Widget _eventWorkshopCard(BuildContext context, dynamic e) {
+  Widget _eventWorkshopCard(BuildContext context, EventModel e) {
     final state = context.watch<AppState>();
+    final isReg = state.isStudentRegisteredForEvent(e.id);
+    final reg = state.getRegistrationForEvent(e.id);
+    final isTeamReg = reg?.isTeam == true;
+    final isLeader = reg?.isLeader(state.currentUser.rollNumber) == true;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
@@ -562,7 +752,10 @@ class StudentHomeScreen extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.outline),
+        border: Border.all(
+          color: isReg ? AppColors.secondary.withValues(alpha: 0.5) : AppColors.outline,
+          width: isReg ? 1.5 : 1,
+        ),
       ),
       child: Row(
         children: [
@@ -600,13 +793,34 @@ class StudentHomeScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  e.time,
-                  style: GoogleFonts.inter(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.secondary,
-                  ),
+                Row(
+                  children: [
+                    Text(
+                      e.time,
+                      style: GoogleFonts.inter(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.secondary,
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    if (e.isTeamEvent)
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+                        decoration: BoxDecoration(
+                          color: AppColors.secondary.withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(
+                          'TEAM',
+                          style: GoogleFonts.inter(
+                            fontSize: 9,
+                            fontWeight: FontWeight.w800,
+                            color: AppColors.secondary,
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
                 const SizedBox(height: 2),
                 Text(
@@ -620,7 +834,7 @@ class StudentHomeScreen extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  e.description,
+                  e.speaker.isNotEmpty ? e.speaker : e.venue,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: GoogleFonts.inter(fontSize: 11, color: AppColors.onSurfaceVariant),
@@ -631,24 +845,33 @@ class StudentHomeScreen extends StatelessWidget {
           const SizedBox(width: 8),
           ElevatedButton(
             onPressed: () {
-              state.toggleEventRegistration(e.id);
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(e.isRegistered ? 'Unregistered from ${e.title}' : 'Registered for ${e.title}!'),
-                  backgroundColor: e.isRegistered ? AppColors.onSurfaceVariant : AppColors.success,
-                  duration: const Duration(seconds: 2),
-                ),
-              );
+              if (isReg) {
+                // Navigate to Events screen to view full pass & team details
+                onNavigateTab?.call(1);
+              } else if (e.isTeamEvent) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => TeamRegistrationScreen(event: e),
+                  ),
+                );
+              } else {
+                _showIndividualRegistrationDialog(context, e);
+              }
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: e.isRegistered ? AppColors.surfaceContainerHigh : AppColors.primary,
-              foregroundColor: e.isRegistered ? AppColors.onSurface : Colors.white,
+              backgroundColor: isReg
+                  ? AppColors.surfaceContainerHigh
+                  : (e.isTeamEvent ? AppColors.secondary : AppColors.primary),
+              foregroundColor: isReg ? AppColors.onSurface : Colors.white,
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
               visualDensity: VisualDensity.compact,
             ),
             child: Text(
-              e.isRegistered ? 'Registered' : 'Register',
+              isReg
+                  ? (isTeamReg ? (isLeader ? 'Leader' : 'Member') : 'Registered')
+                  : (e.isTeamEvent ? 'Team' : 'Register'),
               style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600),
             ),
           ),
@@ -657,66 +880,67 @@ class StudentHomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _healthItem(String label, String value, IconData icon) {
-    return Column(
-      children: [
-        Text(
-          label,
-          style: GoogleFonts.inter(fontSize: 11, color: AppColors.onSurfaceVariant),
-        ),
-        const SizedBox(height: 4),
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 14, color: AppColors.success),
-            const SizedBox(width: 4),
-            Text(
-              value,
-              style: GoogleFonts.inter(
-                fontSize: 13,
-                fontWeight: FontWeight.w700,
-                color: AppColors.onSurface,
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  void _showReportIssueDialog(BuildContext context) {
-    final titleController = TextEditingController();
-    final descController = TextEditingController();
+  void _showIndividualRegistrationDialog(BuildContext context, EventModel event) {
+    final state = context.read<AppState>();
+    final user = state.currentUser;
 
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: AppColors.surface,
-        title: Row(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Icon(Icons.report_problem, color: AppColors.secondary, size: 22),
-            const SizedBox(width: 8),
-            Text('Report IT Issue', style: GoogleFonts.inter(fontWeight: FontWeight.w700)),
+            Text(
+              'Individual Registration',
+              style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.w800, color: AppColors.onSurface),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              event.title,
+              style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.secondary),
+            ),
           ],
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            TextField(
-              controller: titleController,
-              decoration: const InputDecoration(
-                labelText: 'Issue Subject / Workstation ID',
-                hintText: 'e.g. Lab 402 Workstation #14 HDMI signal lost',
+            Text(
+              'Auto-filled from authenticated profile:',
+              style: GoogleFonts.inter(fontSize: 11, color: AppColors.onSurfaceVariant),
+            ),
+            const SizedBox(height: 10),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: AppColors.surfaceContainerLow,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: AppColors.outline),
+              ),
+              child: Column(
+                children: [
+                  _profileItem('Student Name', user.name),
+                  _profileItem('Roll Number', user.rollNumber),
+                  _profileItem('College Email', user.email),
+                  _profileItem('Department', user.department),
+                  _profileItem('Academic Year', user.academicDetails),
+                ],
               ),
             ),
             const SizedBox(height: 12),
-            TextField(
-              controller: descController,
-              maxLines: 3,
-              decoration: const InputDecoration(
-                labelText: 'Detailed Problem Description',
-                hintText: 'Include error codes or hardware behavior...',
-              ),
+            Row(
+              children: [
+                const Icon(Icons.verified, size: 14, color: AppColors.success),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Text(
+                    'Pre-filled verified credentials via @sasi.ac.in',
+                    style: GoogleFonts.inter(fontSize: 11, color: AppColors.success, fontWeight: FontWeight.w500),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
@@ -727,84 +951,36 @@ class StudentHomeScreen extends StatelessWidget {
           ),
           ElevatedButton(
             onPressed: () {
-              if (titleController.text.trim().isNotEmpty) {
-                context.read<AppState>().addServiceTicket(
-                      title: titleController.text.trim(),
-                      description: descController.text.trim().isEmpty
-                          ? "Reported via Student Portal Mobile App"
-                          : descController.text.trim(),
-                    );
-                Navigator.pop(ctx);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Ticket created and dispatched to SysAdmin!'),
-                    backgroundColor: AppColors.success,
-                  ),
-                );
-              }
+              state.registerIndividualEvent(eventId: event.id);
+              Navigator.pop(ctx);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Registered for ${event.title}!'),
+                  backgroundColor: AppColors.success,
+                ),
+              );
             },
-            child: const Text('Submit Ticket'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primary,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Confirm Registration'),
           ),
         ],
       ),
     );
   }
 
-  void _showSoftwareHubModal(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      builder: (ctx) => Container(
-        padding: const EdgeInsets.all(20),
-        decoration: const BoxDecoration(
-          color: AppColors.surface,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                const Icon(Icons.terminal, color: AppColors.secondary),
-                const SizedBox(width: 8),
-                Text(
-                  'Department Software Hub',
-                  style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.w700),
-                ),
-              ],
-            ),
-            const SizedBox(height: 6),
-            Text(
-              'Institutional licenses available for enrolled students:',
-              style: GoogleFonts.inter(fontSize: 12, color: AppColors.onSurfaceVariant),
-            ),
-            const SizedBox(height: 14),
-            _softwareTile('JetBrains All Products Pack', 'Institutional License Active', Icons.code),
-            _softwareTile('MATLAB & Simulink R2026b', 'Campus-wide Concurrent License', Icons.insights),
-            _softwareTile('Docker Desktop Enterprise', 'Single Sign-On Enabled', Icons.layers),
-            _softwareTile('NVIDIA CUDA Toolkit 12.6', 'Installed on Lab 402 GPU Rig', Icons.memory),
-          ],
-        ),
+  Widget _profileItem(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 3),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(label, style: GoogleFonts.inter(fontSize: 11, color: AppColors.onSurfaceVariant)),
+          Text(value, style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.onSurface)),
+        ],
       ),
-    );
-  }
-
-  Widget _softwareTile(String title, String subtitle, IconData icon) {
-    return ListTile(
-      dense: true,
-      contentPadding: EdgeInsets.zero,
-      leading: Container(
-        padding: const EdgeInsets.all(8),
-        decoration: const BoxDecoration(
-          color: AppColors.surfaceContainerLow,
-          borderRadius: BorderRadius.all(Radius.circular(8)),
-        ),
-        child: Icon(icon, color: AppColors.primary, size: 20),
-      ),
-      title: Text(title, style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 13)),
-      subtitle: Text(subtitle, style: GoogleFonts.inter(fontSize: 11, color: AppColors.onSurfaceVariant)),
-      trailing: const Icon(Icons.download, size: 18, color: AppColors.secondary),
     );
   }
 }

@@ -1,4 +1,4 @@
-﻿import '../../core/widgets/permission_dialog.dart';
+import '../../core/widgets/permission_dialog.dart';
 import '../features/contacts/contacts_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -6,8 +6,7 @@ import 'package:provider/provider.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/app_widgets.dart';
 import '../../state/app_state.dart';
-//
-import '../auth/login_screen.dart';
+import '../auth/app_start_screen.dart';
 
 class StudentProfileScreen extends StatelessWidget {
   const StudentProfileScreen({super.key});
@@ -200,7 +199,7 @@ class StudentProfileScreen extends StatelessWidget {
                 onPressed: () {
                   Navigator.pushAndRemoveUntil(
                     context,
-                    MaterialPageRoute(builder: (_) => const LoginScreen()),
+                    MaterialPageRoute(builder: (_) => const AppStartScreen()),
                     (route) => false,
                   );
                 },

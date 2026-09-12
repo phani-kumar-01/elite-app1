@@ -1,11 +1,11 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'core/theme/app_theme.dart';
 import 'core/services/permission_service.dart';
 import 'core/services/supabase_service.dart';
 import 'state/app_state.dart';
-import 'ui/auth/login_screen.dart';
+import 'ui/auth/app_start_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -39,11 +39,12 @@ class EliteApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => PermissionService()..checkAllPermissions()),
       ],
       child: MaterialApp(
-        title: 'ELITE',
+        title: 'ELITE IT',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.lightTheme,
-        home: const LoginScreen(),
+        home: const AppStartScreen(),
       ),
     );
   }
 }
+

@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -10,8 +10,15 @@ import '../../ui/features/contacts/contacts_screen.dart';
 
 class AppHeader extends StatelessWidget implements PreferredSizeWidget {
   final VoidCallback? onNotificationTap;
+  final String? title;
+  final String? subtitle;
 
-  const AppHeader({super.key, this.onNotificationTap});
+  const AppHeader({
+    super.key,
+    this.onNotificationTap,
+    this.title,
+    this.subtitle,
+  });
 
   @override
   Size get preferredSize => const Size.fromHeight(60);
@@ -61,7 +68,7 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'ELITE',
+                title ?? 'ELITE',
                 style: GoogleFonts.inter(
                   fontSize: 17,
                   fontWeight: FontWeight.w900,
@@ -70,7 +77,7 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
                 ),
               ),
               Text(
-                'Information Technology',
+                subtitle ?? 'Information Technology',
                 style: GoogleFonts.inter(
                   fontSize: 9,
                   fontWeight: FontWeight.w600,
