@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><style>@layer base{html,body{width:100vw;margin:0;padding:0;}body{overscroll-behavior:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+          "tertiary-container": "#121c28",
+          "on-primary": "#ffffff",
+          "secondary-fixed-dim": "#ffb4ac",
+          "primary": "#000000",
+          "tertiary": "#000000",
+          "outline-variant": "#c6c6cd",
+          "on-tertiary-fixed": "#121c28",
+          "surface-container": "#edeeef",
+          "background": "#f8f9fa",
+          "error": "#ba1a1a",
+          "on-primary-container": "#7d8497",
+          "on-tertiary-fixed-variant": "#3e4755",
+          "on-error": "#ffffff",
+          "inverse-primary": "#c0c6db",
+          "outline": "#76777d",
+          "tertiary-fixed-dim": "#bdc7d8",
+          "surface-tint": "#575e70",
+          "on-surface-variant": "#45464c",
+          "on-secondary-fixed": "#410002",
+          "inverse-surface": "#2e3132",
+          "tertiary-fixed": "#d9e3f4",
+          "secondary-container": "#ff665c",
+          "secondary": "#b02d29",
+          "surface": "#f8f9fa",
+          "on-tertiary": "#ffffff",
+          "on-tertiary-container": "#7a8594",
+          "surface-container-high": "#e7e8e9",
+          "on-background": "#191c1d",
+          "on-primary-fixed": "#141b2b",
+          "surface-dim": "#d9dadb",
+          "surface-container-low": "#f3f4f5",
+          "error-container": "#ffdad6",
+          "on-secondary-container": "#690007",
+          "on-surface": "#191c1d",
+          "primary-container": "#141b2b",
+          "secondary-fixed": "#ffdad6",
+          "primary-fixed": "#dce2f7",
+          "on-secondary": "#ffffff",
+          "surface-container-lowest": "#ffffff",
+          "surface-variant": "#e1e3e4",
+          "on-secondary-fixed-variant": "#8e1214",
+          "surface-container-highest": "#e1e3e4",
+          "on-primary-fixed-variant": "#404758",
+          "inverse-on-surface": "#f0f1f2",
+          "primary-fixed-dim": "#c0c6db",
+          "surface-bright": "#f8f9fa",
+          "on-error-container": "#93000a"
+        },
+        "borderRadius": {
+          "DEFAULT": "0.25rem",
+          "lg": "0.5rem",
+          "xl": "0.75rem",
+          "full": "9999px"
+        },
+        "spacing": {
+          "margin": "2rem",
+          "space-xl": "2.5rem",
+          "gutter": "1.5rem",
+          "space-xs": "0.25rem",
+          "space-sm": "0.5rem",
+          "space-md": "1rem",
+          "space-lg": "1.5rem"
+        },
+        "fontFamily": {
+          "body-md": ["Inter"],
+          "headline-sm": ["Inter"],
+          "body-sm": ["Inter"],
+          "headline-md": ["Inter"],
+          "label-md": ["Inter"],
+          "label-sm": ["Inter"],
+          "body-lg": ["Inter"],
+          "headline-lg-mobile": ["Inter"],
+          "headline-lg": ["Inter"]
+        },
+        "fontSize": {
+          "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+          "headline-sm": ["18px", {"lineHeight": "24px", "fontWeight": "500"}],
+          "body-sm": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+          "headline-md": ["24px", {"lineHeight": "30px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+          "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500"}],
+          "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "500"}],
+          "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+          "headline-lg-mobile": ["26px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+          "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "600"}]
+        }
+      }
+    }
+  }
+</script><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet"/></head><body class="bg-surface font-body-md text-on-surface flex flex-col min-h-screen"><header class="fixed top-0 inset-x-0 z-50 bg-surface/80 backdrop-blur-xl pt-safe shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-gutter flex items-center justify-between"><div class="flex items-center gap-space-sm"><img class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1VNi64JZaZ9rSeFBoDarmxNybyJjQjflKAqRrju4Hg6MzbPbCauCRIM_UQEDX7o5cGFV3MFbckRlgyP28x9MczIiYL3ObQ9aczP2kkXqR8mSh6OhGkhUi6KxvguvLkjGF_zFVNxp1KjRpm4gcSxELSBGunxPGcaVSyzqwfUvlT8a0RpNaMs9Y10PjoEm4iRSsqOKtgjZIGbdA5ULeRJ4Zo9yPNJaFK4E25C1suZv9t58dmSnMX6e53_0BM"/><span class="text-headline-sm font-headline-sm text-on-surface tracking-tight">ELITE IT</span></div><div class="flex items-center gap-space-sm"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex flex-col relative w-full px-gutter pt-16 pb-24 bg-surface flex-1"><div class="flex flex-col w-full gap-space-lg pb-space-xl">
+<!-- Welcome Greeting & Quick Stats Bento -->
+<div class="flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div>
+<p class="font-body-sm text-on-surface-variant uppercase tracking-wider">Welcome back</p>
+<h1 class="font-headline-lg-mobile text-on-surface tracking-tight">Alex Vance</h1>
+</div>
+<div class="flex items-center gap-space-xs bg-surface-container-high px-space-md py-space-sm rounded-full">
+<span class="w-2.5 h-2.5 rounded-full bg-secondary animate-pulse"></span>
+<span class="font-label-sm text-on-surface font-medium">B.Tech IT • Sem 6</span>
+</div>
+</div>
+<!-- Active Lab Pass Status Banner -->
+<div class="relative overflow-hidden bg-primary-container text-on-primary-container p-space-lg rounded-xl shadow-sm flex flex-col gap-space-md">
+<div class="absolute -right-6 -bottom-6 w-32 h-32 rounded-full bg-secondary/10 blur-2xl pointer-events-none"></div>
+<div class="flex items-start justify-between relative z-10">
+<div class="flex items-center gap-space-md">
+<div class="w-12 h-12 rounded-xl bg-secondary text-on-secondary flex items-center justify-center shadow-md">
+<span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">qr_code_2</span>
+</div>
+<div>
+<div class="flex items-center gap-space-sm">
+<span class="inline-flex items-center px-space-xs py-0.5 rounded text-label-sm font-medium bg-secondary text-on-secondary">ACTIVE PASS</span>
+<span class="font-body-sm text-on-primary-container/80">ID: #IT-9942</span>
+</div>
+<h2 class="font-headline-sm text-on-primary mt-0.5">Advanced Lab 402 Access</h2>
+</div>
+</div>
+<button class="bg-secondary hover:bg-secondary/90 text-on-secondary px-space-md py-space-sm rounded-lg font-label-md transition-all shadow-sm flex items-center gap-space-xs" onclick="alert('Displaying secure QR pass for lab turnstile')">
+<span class="material-symbols-outlined text-[18px]">fullscreen</span>
+<span>View QR</span>
+</button>
+</div>
+<div class="flex items-center justify-between pt-space-sm border-t border-on-primary-container/20 text-body-sm text-on-primary-container/90 relative z-10">
+<span class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[16px]">schedule</span> Expires at 6:00 PM Today
+        </span>
+<span class="text-on-primary font-medium">Authorized: AI & Systems Lab</span>
+</div>
+</div>
+</div>
+<!-- Quick Actions Grid -->
+<div class="flex flex-col gap-space-md">
+<h2 class="font-headline-sm text-on-surface">Quick Actions</h2>
+<div class="grid grid-cols-3 gap-space-md">
+<button class="flex flex-col items-center justify-center p-space-md bg-surface-container-lowest hover:bg-surface-container-low transition-all rounded-xl shadow-sm group gap-space-sm text-center" onclick="location.hash='report'">
+<div class="w-12 h-12 rounded-full bg-surface-container flex items-center justify-center group-hover:bg-secondary group-hover:text-on-secondary transition-all text-on-surface">
+<span class="material-symbols-outlined text-[22px]">report_problem</span>
+</div>
+<span class="font-label-md text-on-surface">Report Issue</span>
+</button>
+<button class="flex flex-col items-center justify-center p-space-md bg-surface-container-lowest hover:bg-surface-container-low transition-all rounded-xl shadow-sm group gap-space-sm text-center" onclick="location.hash='pass'">
+<div class="w-12 h-12 rounded-full bg-surface-container flex items-center justify-center group-hover:bg-secondary group-hover:text-on-secondary transition-all text-on-surface">
+<span class="material-symbols-outlined text-[22px]">qr_code</span>
+</div>
+<span class="font-label-md text-on-surface">Lab QR Pass</span>
+</button>
+<button class="flex flex-col items-center justify-center p-space-md bg-surface-container-lowest hover:bg-surface-container-low transition-all rounded-xl shadow-sm group gap-space-sm text-center" onclick="location.hash='software'">
+<div class="w-12 h-12 rounded-full bg-surface-container flex items-center justify-center group-hover:bg-secondary group-hover:text-on-secondary transition-all text-on-surface">
+<span class="material-symbols-outlined text-[22px]">terminal</span>
+</div>
+<span class="font-label-md text-on-surface">Software Hub</span>
+</button>
+</div>
+</div>
+<!-- Active Service Tickets -->
+<div class="flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<h2 class="font-headline-sm text-on-surface">Active Service Tickets</h2>
+<a class="font-label-sm text-secondary hover:underline" href="#">View History</a>
+</div>
+<div class="flex flex-col gap-space-md">
+<!-- Ticket Item 1 -->
+<div class="p-space-lg bg-surface-container-lowest rounded-xl shadow-sm flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<span class="px-space-xs py-0.5 rounded text-label-sm font-medium bg-secondary-fixed text-on-secondary-fixed">IN PROGRESS</span>
+<span class="font-body-sm text-on-surface-variant">TICK-#8492</span>
+</div>
+<span class="font-body-sm text-on-surface-variant">Updated 2h ago</span>
+</div>
+<h3 class="font-label-md text-on-surface">GPU Cluster Node #4 CUDA Driver Failure</h3>
+<p class="font-body-sm text-on-surface-variant line-clamp-1">Assigned to Lead SysAdmin Marcus Vance. Diagnostic logs attached successfully.</p>
+</div>
+<!-- Ticket Item 2 -->
+<div class="p-space-lg bg-surface-container-lowest rounded-xl shadow-sm flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<span class="px-space-xs py-0.5 rounded text-label-sm font-medium bg-tertiary-fixed text-on-tertiary-fixed">QUEUED</span>
+<span class="font-body-sm text-on-surface-variant">TICK-#8510</span>
+</div>
+<span class="font-body-sm text-on-surface-variant">Submitted yesterday</span>
+</div>
+<h3 class="font-label-md text-on-surface">VPN Access Request for Remote Database Lab</h3>
+<p class="font-body-sm text-on-surface-variant line-clamp-1">Pending approval from department head. Credentials will be mailed upon clearing.</p>
+</div>
+</div>
+</div>
+<!-- Upcoming IT Workshops -->
+<div class="flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<h2 class="font-headline-sm text-on-surface">Upcoming IT Workshops</h2>
+<span class="font-body-sm text-on-surface-variant">2 available</span>
+</div>
+<div class="flex flex-col gap-space-md">
+<!-- Workshop 1 -->
+<div class="p-space-lg bg-surface-container-lowest rounded-xl shadow-sm flex items-center justify-between gap-space-md">
+<div class="flex items-center gap-space-md">
+<div class="w-14 h-14 rounded-xl bg-surface-container flex flex-col items-center justify-center text-center shrink-0">
+<span class="font-body-sm text-secondary font-bold">OCT</span>
+<span class="font-headline-sm text-on-surface">24</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-sm text-secondary font-medium">10:00 AM • Seminar Hall B</span>
+<h3 class="font-headline-sm text-on-surface truncate">Kubernetes Microservices Architecture</h3>
+<p class="font-body-sm text-on-surface-variant truncate">Hands-on deployment with industry experts.</p>
+</div>
+</div>
+<button class="px-space-md py-space-sm rounded-lg bg-primary text-on-primary font-label-md shrink-0 hover:bg-primary/90 transition-all shadow-sm" onclick="this.innerText='Registered'; this.classList.remove('bg-primary', 'text-on-primary'); this.classList.add('bg-surface-container', 'text-on-surface');">
+          Register
+        </button>
+</div>
+<!-- Workshop 2 -->
+<div class="p-space-lg bg-surface-container-lowest rounded-xl shadow-sm flex items-center justify-between gap-space-md">
+<div class="flex items-center gap-space-md">
+<div class="w-14 h-14 rounded-xl bg-surface-container flex flex-col items-center justify-center text-center shrink-0">
+<span class="font-body-sm text-secondary font-bold">NOV</span>
+<span class="font-headline-sm text-on-surface">02</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-sm text-secondary font-medium">02:00 PM • Lab 101</span>
+<h3 class="font-headline-sm text-on-surface truncate">Zero-Trust Network Security & Pentesting</h3>
+<p class="font-body-sm text-on-surface-variant truncate">Advanced defensive engineering fundamentals.</p>
+</div>
+</div>
+<button class="px-space-md py-space-sm rounded-lg bg-primary text-on-primary font-label-md shrink-0 hover:bg-primary/90 transition-all shadow-sm" onclick="this.innerText='Registered'; this.classList.remove('bg-primary', 'text-on-primary'); this.classList.add('bg-surface-container', 'text-on-surface');">
+          Register
+        </button>
+</div>
+</div>
+</div>
+<!-- System Health Status Widget -->
+<div class="p-space-lg bg-surface-container-lowest rounded-xl shadow-sm flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<span class="w-3 h-3 rounded-full bg-emerald-600 animate-pulse"></span>
+<h2 class="font-headline-sm text-on-surface">Campus IT Infrastructure</h2>
+</div>
+<span class="font-label-sm text-on-surface-variant">All Systems Operational</span>
+</div>
+<div class="grid grid-cols-3 gap-space-md pt-space-xs">
+<div class="flex flex-col gap-space-xs">
+<span class="font-body-sm text-on-surface-variant">Campus Wi-Fi</span>
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[16px] text-emerald-600">check_circle</span>
+<span class="font-label-md text-on-surface">99.9%</span>
+</div>
+</div>
+<div class="flex flex-col gap-space-xs">
+<span class="font-body-sm text-on-surface-variant">Lab Servers</span>
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[16px] text-emerald-600">check_circle</span>
+<span class="font-label-md text-on-surface">Normal</span>
+</div>
+</div>
+<div class="flex flex-col gap-space-xs">
+<span class="font-body-sm text-on-surface-variant">Cloud Portal</span>
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[16px] text-emerald-600">check_circle</span>
+<span class="font-label-md text-on-surface">Online</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script>
+  // Highlight active nav item for Home
+  document.querySelectorAll('nav a').forEach(el => {
+    if(el.getAttribute('data-path') === 'home') {
+      el.classList.add('text-secondary');
+      const icon = el.querySelector('.material-symbols-outlined');
+      if(icon) icon.style.fontVariationSettings = "'FILL' 1";
+    }
+  });
+</script></main><nav class="fixed bottom-0 inset-x-0 z-50 pb-safe bg-surface/90 backdrop-blur-xl shadow-[0_-1px_8px_rgba(0,0,0,0.04)]" data-active-classes="text-secondary"><div class="flex justify-around items-center h-20 px-space-sm"><a aria-current="page" class="flex flex-col items-center justify-center gap-space-xs w-16 h-16 transition-all text-secondary" data-path="home" href="#"><span class="material-symbols-outlined">home</span><span class="text-label-sm">Home</span></a><a class="flex flex-col items-center justify-center gap-space-xs w-16 h-16 text-on-surface-variant transition-all" data-path="events" href="#"><span class="material-symbols-outlined">event</span><span class="text-label-sm">Events</span></a><a class="flex flex-col items-center justify-center gap-space-xs w-16 h-16 text-on-surface-variant transition-all" data-path="polls" href="#"><span class="material-symbols-outlined">how_to_vote</span><span class="text-label-sm">Polls</span></a><a class="flex flex-col items-center justify-center gap-space-xs w-16 h-16 text-on-surface-variant transition-all" data-path="notifications" href="#"><span class="material-symbols-outlined">notifications</span><span class="text-label-sm">Alerts</span></a><a class="flex flex-col items-center justify-center gap-space-xs w-16 h-16 text-on-surface-variant transition-all" data-path="profile" href="#"><span class="material-symbols-outlined">person</span><span class="text-label-sm">Profile</span></a></div></nav></body></html>

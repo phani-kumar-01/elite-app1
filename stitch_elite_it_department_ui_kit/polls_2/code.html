@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><style>@layer base{html,body{width:100vw;margin:0;padding:0;}body{overscroll-behavior:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+          "primary-container": "#141b2b",
+          "on-primary-container": "#7d8497",
+          "inverse-primary": "#c0c6db",
+          "on-primary": "#ffffff",
+          "surface-variant": "#e1e3e4",
+          "on-secondary-container": "#690007",
+          "tertiary-container": "#121c28",
+          "on-error-container": "#93000a",
+          "secondary": "#b02d29",
+          "primary-fixed-dim": "#c0c6db",
+          "inverse-surface": "#2e3132",
+          "on-tertiary": "#ffffff",
+          "surface-container-low": "#f3f4f5",
+          "on-surface-variant": "#45464c",
+          "on-secondary": "#ffffff",
+          "on-secondary-fixed": "#410002",
+          "secondary-fixed": "#ffdad6",
+          "on-surface": "#191c1d",
+          "error": "#ba1a1a",
+          "surface": "#f8f9fa",
+          "on-tertiary-fixed-variant": "#3e4755",
+          "tertiary-fixed-dim": "#bdc7d8",
+          "error-container": "#ffdad6",
+          "secondary-fixed-dim": "#ffb4ac",
+          "on-tertiary-container": "#7a8594",
+          "surface-container-lowest": "#ffffff",
+          "surface-tint": "#575e70",
+          "secondary-container": "#ff665c",
+          "on-secondary-fixed-variant": "#8e1214",
+          "tertiary": "#000000",
+          "on-primary-fixed": "#141b2b",
+          "surface-bright": "#f8f9fa",
+          "background": "#f8f9fa",
+          "on-background": "#191c1d",
+          "on-error": "#ffffff",
+          "inverse-on-surface": "#f0f1f2",
+          "surface-container-highest": "#e1e3e4",
+          "outline": "#76777d",
+          "tertiary-fixed": "#d9e3f4",
+          "surface-container": "#edeeef",
+          "surface-dim": "#d9dadb",
+          "on-primary-fixed-variant": "#404758",
+          "primary-fixed": "#dce2f7",
+          "primary": "#000000",
+          "on-tertiary-fixed": "#121c28",
+          "outline-variant": "#c6c6cd",
+          "surface-container-high": "#e7e8e9"
+        },
+        "borderRadius": {
+          "DEFAULT": "0.25rem",
+          "lg": "0.5rem",
+          "xl": "0.75rem",
+          "full": "9999px"
+        },
+        "spacing": {
+          "space-xs": "0.25rem",
+          "space-lg": "1.5rem",
+          "space-xl": "2.5rem",
+          "margin": "2rem",
+          "space-sm": "0.5rem",
+          "gutter": "1.5rem",
+          "space-md": "1rem"
+        },
+        "fontFamily": {
+          "body-lg": ["Inter"],
+          "headline-md": ["Inter"],
+          "headline-sm": ["Inter"],
+          "label-sm": ["Inter"],
+          "headline-lg-mobile": ["Inter"],
+          "headline-lg": ["Inter"],
+          "label-md": ["Inter"],
+          "body-sm": ["Inter"],
+          "body-md": ["Inter"]
+        },
+        "fontSize": {
+          "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+          "headline-md": ["24px", { "lineHeight": "30px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+          "headline-sm": ["18px", { "lineHeight": "24px", "fontWeight": "500" }],
+          "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "500" }],
+          "headline-lg-mobile": ["26px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+          "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+          "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500" }],
+          "body-sm": ["12px", { "lineHeight": "16px", "fontWeight": "400" }],
+          "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }]
+        }
+      }
+    }
+  }
+</script><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/></head><body class="bg-surface font-body-md text-on-surface flex flex-col min-h-screen"><header class="fixed top-0 inset-x-0 z-50 bg-surface/80 backdrop-blur-xl pt-safe shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-gutter flex items-center justify-between"><div class="flex items-center gap-space-sm"><img alt="Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1VNi64JZaZ9rSeFBoDarmxNybyJjQjflKAqRrju4Hg6MzbPbCauCRIM_UQEDX7o5cGFV3MFbckRlgyP28x9MczIiYL3ObQ9aczP2kkXqR8mSh6OhGkhUi6KxvguvLkjGF_zFVNxp1KjRpm4gcSxELSBGunxPGcaVSyzqwfUvlT8a0RpNaMs9Y10PjoEm4iRSsqOKtgjZIGbdA5ULeRJ4Zo9yPNJaFK4E25C1suZv9t58dmSnMX6e53_0BM"/><span class="text-headline-sm font-headline-sm text-on-surface uppercase tracking-tight">Events</span></div><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></header><main class="flex flex-col relative w-full px-gutter pt-16 pb-24 bg-surface flex-1"><div class="flex flex-col w-full pb-8">
+<!-- Top Action & Filter Bar -->
+<div class="flex items-center justify-between mb-space-lg">
+<div>
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">Campus Pulse</h2>
+<p class="text-body-sm text-on-surface-variant">Real-time student &amp; faculty feedback registry</p>
+</div>
+<button class="bg-primary text-on-primary px-space-md py-space-sm rounded-lg font-label-md flex items-center gap-space-xs shadow-md hover:bg-secondary transition-all" onclick="openCreateModal()">
+<span class="material-symbols-outlined text-[18px]">add_circle</span>
+<span>New Poll</span>
+</button>
+</div>
+<!-- Quick Stats Bento Row -->
+<div class="grid grid-cols-2 gap-space-md mb-space-lg">
+<div class="bg-surface-container-low p-space-md rounded-xl flex flex-col justify-between shadow-sm">
+<div class="flex items-center justify-between text-on-surface-variant mb-space-sm">
+<span class="text-label-sm font-label-sm">Active Polls</span>
+<span class="material-symbols-outlined text-secondary text-[20px]">how_to_vote</span>
+</div>
+<div>
+<span class="text-headline-md font-headline-md text-on-surface">04</span>
+<span class="text-body-sm text-on-surface-variant block">12,450 total votes cast</span>
+</div>
+</div>
+<div class="bg-surface-container-low p-space-md rounded-xl flex flex-col justify-between shadow-sm">
+<div class="flex items-center justify-between text-on-surface-variant mb-space-sm">
+<span class="text-label-sm font-label-sm">Participation Rate</span>
+<span class="material-symbols-outlined text-on-primary-container text-[20px]">trending_up</span>
+</div>
+<div>
+<span class="text-headline-md font-headline-md text-on-surface">78.4%</span>
+<span class="text-body-sm text-on-surface-variant block">+5.2% vs last term</span>
+</div>
+</div>
+</div>
+<!-- Tabs / Filters -->
+<div class="flex items-center gap-space-sm mb-space-md overflow-x-auto pb-space-xs">
+<button class="filter-btn px-space-md py-space-xs rounded-full font-label-sm bg-primary text-on-primary transition-all" onclick="filterPolls('all')">All Polls</button>
+<button class="filter-btn px-space-md py-space-xs rounded-full font-label-sm bg-surface-container-low text-on-surface-variant hover:bg-surface-container transition-all" onclick="filterPolls('active')">Active</button>
+<button class="filter-btn px-space-md py-space-xs rounded-full font-label-sm bg-surface-container-low text-on-surface-variant hover:bg-surface-container transition-all" onclick="filterPolls('closed')">Closed</button>
+<button class="filter-btn px-space-md py-space-xs rounded-full font-label-sm bg-surface-container-low text-on-surface-variant hover:bg-surface-container transition-all" onclick="filterPolls('scheduled')">Scheduled</button>
+</div>
+<!-- Poll Cards Container -->
+<div class="flex flex-col gap-space-md" id="polls-container">
+<!-- Poll Card 1: Active -->
+<div class="poll-card bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col gap-space-md transition-all" data-status="active">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-space-sm">
+<span class="w-3 h-3 rounded-full bg-secondary animate-pulse"></span>
+<span class="text-label-sm font-label-sm uppercase tracking-wider text-secondary">Active Now</span>
+<span class="text-body-sm text-on-surface-variant">• Ends in 4 hours</span>
+</div>
+<div class="flex items-center gap-space-xs">
+<button class="p-space-xs text-on-surface-variant hover:text-on-surface rounded-lg bg-surface-container-low transition-all" onclick="toggleResults(this)" title="Toggle Results">
+<span class="material-symbols-outlined text-[18px]">bar_chart</span>
+</button>
+<button class="p-space-xs text-on-surface-variant hover:text-on-surface rounded-lg bg-surface-container-low transition-all" onclick="openEditModal('Library 24/7 Access Hours Expansion')" title="Edit Poll">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+<button class="p-space-xs text-on-surface-variant hover:text-error rounded-lg bg-surface-container-low transition-all" onclick="confirmDelete(this)" title="Delete Poll">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+</div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-space-xs">Library 24/7 Access Hours Expansion</h3>
+<p class="text-body-md text-on-surface-variant">Should the main campus library extend overnight security protocols to provide 24/7 student access during midterms?</p>
+</div>
+<!-- Results View (Expandable/Toggleable) -->
+<div class="results-section flex flex-col gap-space-sm mt-space-xs">
+<div class="flex flex-col gap-space-xs">
+<div class="flex justify-between text-body-sm">
+<span class="font-label-md text-on-surface">Yes, full 24/7 access</span>
+<span class="text-on-surface-variant font-label-md">68% (3,420 votes)</span>
+</div>
+<div class="w-full bg-surface-container h-2 rounded-full overflow-hidden">
+<div class="bg-primary h-full rounded-full" style="width: 68%;"></div>
+</div>
+</div>
+<div class="flex flex-col gap-space-xs">
+<div class="flex justify-between text-body-sm">
+<span class="font-label-md text-on-surface">Only until 2:00 AM</span>
+<span class="text-on-surface-variant font-label-md">24% (1,205 votes)</span>
+</div>
+<div class="w-full bg-surface-container h-2 rounded-full overflow-hidden">
+<div class="bg-primary-fixed-dim h-full rounded-full" style="width: 24%;"></div>
+</div>
+</div>
+<div class="flex flex-col gap-space-xs">
+<div class="flex justify-between text-body-sm">
+<span class="font-label-md text-on-surface">Keep current hours</span>
+<span class="text-on-surface-variant font-label-md">8% (401 votes)</span>
+</div>
+<div class="w-full bg-surface-container h-2 rounded-full overflow-hidden">
+<div class="bg-surface-variant h-full rounded-full" style="width: 8%;"></div>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between pt-space-sm border-t border-surface-container-low text-body-sm text-on-surface-variant">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[16px]">group</span>
+<span>Target: All Undergraduates</span>
+</div>
+<span class="font-label-sm text-on-surface">Total: 5,026 responses</span>
+</div>
+</div>
+<!-- Poll Card 2: Closed -->
+<div class="poll-card bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col gap-space-md transition-all" data-status="closed">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-space-sm">
+<span class="w-3 h-3 rounded-full bg-outline"></span>
+<span class="text-label-sm font-label-sm uppercase tracking-wider text-outline">Closed</span>
+<span class="text-body-sm text-on-surface-variant">• Ended Oct 12, 2023</span>
+</div>
+<div class="flex items-center gap-space-xs">
+<button class="p-space-xs text-on-surface-variant hover:text-on-surface rounded-lg bg-surface-container-low transition-all" onclick="toggleResults(this)" title="Toggle Results">
+<span class="material-symbols-outlined text-[18px]">bar_chart</span>
+</button>
+<button class="p-space-xs text-on-surface-variant hover:text-on-surface rounded-lg bg-surface-container-low transition-all" onclick="openEditModal('Campus Shuttle Route 4 Realignment')" title="Edit Poll">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+<button class="p-space-xs text-on-surface-variant hover:text-error rounded-lg bg-surface-container-low transition-all" onclick="confirmDelete(this)" title="Delete Poll">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+</div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-space-xs">Campus Shuttle Route 4 Realignment</h3>
+<p class="text-body-md text-on-surface-variant">Which residential hall connection should be prioritized for the upcoming winter shuttle timetable update?</p>
+</div>
+<!-- Results View -->
+<div class="results-section flex flex-col gap-space-sm mt-space-xs">
+<div class="flex flex-col gap-space-xs">
+<div class="flex justify-between text-body-sm">
+<span class="font-label-md text-on-surface">North Quad via Innovation Hub</span>
+<span class="text-on-surface-variant font-label-md">54% (2,110 votes)</span>
+</div>
+<div class="w-full bg-surface-container h-2 rounded-full overflow-hidden">
+<div class="bg-primary h-full rounded-full" style="width: 54%;"></div>
+</div>
+</div>
+<div class="flex flex-col gap-space-xs">
+<div class="flex justify-between text-body-sm">
+<span class="font-label-md text-on-surface">South Campus Express Link</span>
+<span class="text-on-surface-variant font-label-md">46% (1,798 votes)</span>
+</div>
+<div class="w-full bg-surface-container h-2 rounded-full overflow-hidden">
+<div class="bg-surface-variant h-full rounded-full" style="width: 46%;"></div>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between pt-space-sm border-t border-surface-container-low text-body-sm text-on-surface-variant">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[16px]">group</span>
+<span>Target: Commuter Students</span>
+</div>
+<span class="font-label-sm text-on-surface">Total: 3,908 responses</span>
+</div>
+</div>
+<!-- Poll Card 3: Scheduled -->
+<div class="poll-card bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col gap-space-md transition-all" data-status="scheduled">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-space-sm">
+<span class="w-3 h-3 rounded-full bg-on-primary-container"></span>
+<span class="text-label-sm font-label-sm uppercase tracking-wider text-on-primary-container">Scheduled</span>
+<span class="text-body-sm text-on-surface-variant">• Starts Nov 1, 08:00 AM</span>
+</div>
+<div class="flex items-center gap-space-xs">
+<button class="p-space-xs text-on-surface-variant hover:text-on-surface rounded-lg bg-surface-container-low transition-all" onclick="toggleResults(this)" title="Toggle Results">
+<span class="material-symbols-outlined text-[18px]">bar_chart</span>
+</button>
+<button class="p-space-xs text-on-surface-variant hover:text-on-surface rounded-lg bg-surface-container-low transition-all" onclick="openEditModal('Annual Tech Fee Allocation Preferences')" title="Edit Poll">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+<button class="p-space-xs text-on-surface-variant hover:text-error rounded-lg bg-surface-container-low transition-all" onclick="confirmDelete(this)" title="Delete Poll">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+</div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-space-xs">Annual Tech Fee Allocation Preferences</h3>
+<p class="text-body-md text-on-surface-variant">Select your primary preference for campus-wide technology infrastructure improvements funded by the 2024 student fee.</p>
+</div>
+<!-- Results View (Hidden initially for scheduled) -->
+<div class="results-section hidden flex flex-col gap-space-sm mt-space-xs">
+<p class="text-body-sm text-on-surface-variant italic">Voting has not yet commenced. No results to display.</p>
+</div>
+<div class="flex items-center justify-between pt-space-sm border-t border-surface-container-low text-body-sm text-on-surface-variant">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[16px]">group</span>
+<span>Target: Faculty &amp; Students</span>
+</div>
+<span class="font-label-sm text-on-surface">Pending Launch</span>
+</div>
+</div>
+</div>
+<!-- Create/Edit Modal Drawer Simulator -->
+<div class="fixed inset-0 z-50 bg-inverse-surface/40 backdrop-blur-sm hidden items-end justify-center" id="poll-modal">
+<div class="bg-surface-container-lowest w-full max-w-lg rounded-t-2xl p-space-lg flex flex-col gap-space-md max-h-[90vh] overflow-y-auto shadow-2xl">
+<div class="flex items-center justify-between">
+<h3 class="font-headline-md text-headline-md text-on-surface" id="modal-title">Create New Poll</h3>
+<button class="p-space-xs text-on-surface-variant hover:text-on-surface rounded-full bg-surface-container-low" onclick="closeModal()">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<div class="flex flex-col gap-space-md">
+<div class="flex flex-col gap-space-xs">
+<label class="text-label-md font-label-md text-on-surface">Poll Question</label>
+<input class="bg-surface-container-low border-none rounded-lg p-space-sm text-on-surface text-body-md focus:outline-none focus:ring-2 focus:ring-secondary" id="poll-question-input" placeholder="e.g. Preferred commencement speaker format" type="text"/>
+</div>
+<div class="flex flex-col gap-space-xs">
+<label class="text-label-md font-label-md text-on-surface">Description / Context</label>
+<textarea class="bg-surface-container-low border-none rounded-lg p-space-sm text-on-surface text-body-md focus:outline-none focus:ring-2 focus:ring-secondary" placeholder="Add helpful details for participants..." rows="2"></textarea>
+</div>
+<div class="flex flex-col gap-space-xs">
+<label class="text-label-md font-label-md text-on-surface">Target Audience</label>
+<select class="bg-surface-container-low border-none rounded-lg p-space-sm text-on-surface text-body-md focus:outline-none focus:ring-2 focus:ring-secondary">
+<option>All University Members</option>
+<option>Undergraduate Students Only</option>
+<option>Graduate Students Only</option>
+<option>Faculty &amp; Staff Only</option>
+</select>
+</div>
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<label class="text-label-md font-label-md text-on-surface">Poll Options</label>
+<button class="text-secondary text-label-sm font-label-sm flex items-center gap-space-xs" onclick="addOptionField()">
+<span class="material-symbols-outlined text-[16px]">add</span> Add Option
+            </button>
+</div>
+<div class="flex flex-col gap-space-sm" id="options-list">
+<div class="flex items-center gap-space-sm">
+<input class="flex-1 bg-surface-container-low border-none rounded-lg p-space-sm text-on-surface text-body-md focus:outline-none focus:ring-2 focus:ring-secondary" type="text" value="Traditional Stadium Ceremony"/>
+<button class="p-space-sm text-on-surface-variant hover:text-error" onclick="removeOption(this)"><span class="material-symbols-outlined text-[18px]">remove_circle</span></button>
+</div>
+<div class="flex items-center gap-space-sm">
+<input class="flex-1 bg-surface-container-low border-none rounded-lg p-space-sm text-on-surface text-body-md focus:outline-none focus:ring-2 focus:ring-secondary" type="text" value="Quad Lawn Festival Setup"/>
+<button class="p-space-sm text-on-surface-variant hover:text-error" onclick="removeOption(this)"><span class="material-symbols-outlined text-[18px]">remove_circle</span></button>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-space-md">
+<div class="flex flex-col gap-space-xs">
+<label class="text-label-md font-label-md text-on-surface">Start Date</label>
+<input class="bg-surface-container-low border-none rounded-lg p-space-sm text-on-surface text-body-md focus:outline-none focus:ring-2 focus:ring-secondary" type="date" value="2023-10-25"/>
+</div>
+<div class="flex flex-col gap-space-xs">
+<label class="text-label-md font-label-md text-on-surface">End Date</label>
+<input class="bg-surface-container-low border-none rounded-lg p-space-sm text-on-surface text-body-md focus:outline-none focus:ring-2 focus:ring-secondary" type="date" value="2023-10-30"/>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-end gap-space-sm pt-space-md border-t border-surface-container-low">
+<button class="px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-low font-label-md" onclick="closeModal()">Cancel</button>
+<button class="bg-primary text-on-primary px-space-lg py-space-sm rounded-lg font-label-md hover:bg-secondary transition-all" onclick="savePoll()">Publish Poll</button>
+</div>
+</div>
+</div>
+<!-- Interactive Scripts -->
+<script>
+    function filterPolls(status) {
+      const buttons = document.querySelectorAll('.filter-btn');
+      buttons.forEach(btn => {
+        btn.classList.remove('bg-primary', 'text-on-primary');
+        btn.classList.add('bg-surface-container-low', 'text-on-surface-variant');
+      });
+      event.target.classList.remove('bg-surface-container-low', 'text-on-surface-variant');
+      event.target.classList.add('bg-primary', 'text-on-primary');
+
+      const cards = document.querySelectorAll('.poll-card');
+      cards.forEach(card => {
+        if(status === 'all' || card.getAttribute('data-status') === status) {
+          card.style.display = 'flex';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+
+    function toggleResults(btn) {
+      const card = btn.closest('.poll-card');
+      const results = card.querySelector('.results-section');
+      results.classList.toggle('hidden');
+    }
+
+    function openCreateModal() {
+      document.getElementById('modal-title').innerText = 'Create New Poll';
+      document.getElementById('poll-question-input').value = '';
+      const modal = document.getElementById('poll-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function openEditModal(title) {
+      document.getElementById('modal-title').innerText = 'Edit Poll: ' + title;
+      document.getElementById('poll-question-input').value = title;
+      const modal = document.getElementById('poll-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('poll-modal');
+      modal.classList.remove('flex');
+      modal.classList.add('hidden');
+    }
+
+    function addOptionField() {
+      const list = document.getElementById('options-list');
+      const div = document.createElement('div');
+      div.className = 'flex items-center gap-space-sm';
+      div.innerHTML = \`<input type="text" placeholder="Enter alternative option..." class="flex-1 bg-surface-container-low border-none rounded-lg p-space-sm text-on-surface text-body-md focus:outline-none focus:ring-2 focus:ring-secondary"><button onclick="removeOption(this)" class="p-space-sm text-on-surface-variant hover:text-error"><span class="material-symbols-outlined text-[18px]">remove_circle</span></button>\`;
+      list.appendChild(div);
+    }
+
+    function removeOption(btn) {
+      btn.closest('div').remove();
+    }
+
+    function confirmDelete(btn) {
+      if(confirm('Are you sure you want to delete this poll? All responses will be permanently removed.')) {
+        btn.closest('.poll-card').remove();
+      }
+    }
+
+    function savePoll() {
+      alert('Poll successfully saved and dispatched!');
+      closeModal();
+    }
+  </script>
+</div></main><nav class="fixed bottom-0 inset-x-0 z-50 pb-safe bg-surface/90 backdrop-blur-xl shadow-[0_-1px_8px_rgba(0,0,0,0.04)]" data-active-classes="text-secondary"><div class="flex justify-around items-center h-20 px-space-xs"><a class="flex flex-col items-center justify-center gap-space-xs w-16 h-16 text-on-surface-variant hover:text-on-surface transition-all" data-path="dashboard" href="#"><span class="material-symbols-outlined">dashboard</span><span class="text-label-sm">Dashboard</span></a><a class="flex flex-col items-center justify-center gap-space-xs w-16 h-16 text-on-surface-variant hover:text-on-surface transition-all" data-path="students" href="#"><span class="material-symbols-outlined">school</span><span class="text-label-sm">Students</span></a><a class="flex flex-col items-center justify-center gap-space-xs w-16 h-16 text-on-surface-variant hover:text-on-surface transition-all" data-path="staff" href="#"><span class="material-symbols-outlined">badge</span><span class="text-label-sm">Staff</span></a><a aria-current="page" class="flex flex-col items-center justify-center gap-space-xs w-16 h-16 transition-all text-secondary" data-path="events" href="#"><span class="material-symbols-outlined">event</span><span class="text-label-sm">Events</span></a><a class="flex flex-col items-center justify-center gap-space-xs w-16 h-16 text-on-surface-variant hover:text-on-surface transition-all" data-path="settings" href="#"><span class="material-symbols-outlined">settings</span><span class="text-label-sm">More</span></a></div></nav></body></html>

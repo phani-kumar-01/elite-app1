@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><style>@layer base{html,body{width:100vw;margin:0;padding:0;}body{overscroll-behavior:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+          "primary-container": "#141b2b",
+          "on-primary-container": "#7d8497",
+          "inverse-primary": "#c0c6db",
+          "on-primary": "#ffffff",
+          "surface-variant": "#e1e3e4",
+          "on-secondary-container": "#690007",
+          "tertiary-container": "#121c28",
+          "on-error-container": "#93000a",
+          "secondary": "#b02d29",
+          "primary-fixed-dim": "#c0c6db",
+          "inverse-surface": "#2e3132",
+          "on-tertiary": "#ffffff",
+          "surface-container-low": "#f3f4f5",
+          "on-surface-variant": "#45464c",
+          "on-secondary": "#ffffff",
+          "on-secondary-fixed": "#410002",
+          "secondary-fixed": "#ffdad6",
+          "on-surface": "#191c1d",
+          "error": "#ba1a1a",
+          "surface": "#f8f9fa",
+          "on-tertiary-fixed-variant": "#3e4755",
+          "tertiary-fixed-dim": "#bdc7d8",
+          "error-container": "#ffdad6",
+          "secondary-fixed-dim": "#ffb4ac",
+          "on-tertiary-container": "#7a8594",
+          "surface-container-lowest": "#ffffff",
+          "surface-tint": "#575e70",
+          "secondary-container": "#ff665c",
+          "on-secondary-fixed-variant": "#8e1214",
+          "tertiary": "#000000",
+          "on-primary-fixed": "#141b2b",
+          "surface-bright": "#f8f9fa",
+          "background": "#f8f9fa",
+          "on-background": "#191c1d",
+          "on-error": "#ffffff",
+          "inverse-on-surface": "#f0f1f2",
+          "surface-container-highest": "#e1e3e4",
+          "outline": "#76777d",
+          "tertiary-fixed": "#d9e3f4",
+          "surface-container": "#edeeef",
+          "surface-dim": "#d9dadb",
+          "on-primary-fixed-variant": "#404758",
+          "primary-fixed": "#dce2f7",
+          "primary": "#000000",
+          "on-tertiary-fixed": "#121c28",
+          "outline-variant": "#c6c6cd",
+          "surface-container-high": "#e7e8e9"
+        },
+        "borderRadius": {
+          "DEFAULT": "0.25rem",
+          "lg": "0.5rem",
+          "xl": "0.75rem",
+          "full": "9999px"
+        },
+        "spacing": {
+          "space-xs": "0.25rem",
+          "space-lg": "1.5rem",
+          "space-xl": "2.5rem",
+          "margin": "2rem",
+          "space-sm": "0.5rem",
+          "gutter": "1.5rem",
+          "space-md": "1rem"
+        },
+        "fontFamily": {
+          "body-lg": ["Inter"],
+          "headline-md": ["Inter"],
+          "headline-sm": ["Inter"],
+          "label-sm": ["Inter"],
+          "headline-lg-mobile": ["Inter"],
+          "headline-lg": ["Inter"],
+          "label-md": ["Inter"],
+          "body-sm": ["Inter"],
+          "body-md": ["Inter"]
+        },
+        "fontSize": {
+          "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+          "headline-md": ["24px", { "lineHeight": "30px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+          "headline-sm": ["18px", { "lineHeight": "24px", "fontWeight": "500" }],
+          "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "500" }],
+          "headline-lg-mobile": ["26px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+          "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+          "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500" }],
+          "body-sm": ["12px", { "lineHeight": "16px", "fontWeight": "400" }],
+          "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }]
+        }
+      }
+    }
+  }
+</script><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/></head><body class="bg-surface font-body-md text-on-surface flex flex-col min-h-screen"><header class="fixed top-0 inset-x-0 z-50 bg-surface/80 backdrop-blur-xl pt-safe shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-gutter flex items-center justify-between"><div class="flex items-center gap-space-sm"><img alt="Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1VNi64JZaZ9rSeFBoDarmxNybyJjQjflKAqRrju4Hg6MzbPbCauCRIM_UQEDX7o5cGFV3MFbckRlgyP28x9MczIiYL3ObQ9aczP2kkXqR8mSh6OhGkhUi6KxvguvLkjGF_zFVNxp1KjRpm4gcSxELSBGunxPGcaVSyzqwfUvlT8a0RpNaMs9Y10PjoEm4iRSsqOKtgjZIGbdA5ULeRJ4Zo9yPNJaFK4E25C1suZv9t58dmSnMX6e53_0BM"/><span class="text-headline-sm font-headline-sm text-on-surface uppercase tracking-tight">Staff</span></div><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></header><main class="flex flex-col relative w-full px-gutter pt-16 pb-24 bg-surface flex-1"><div class="flex flex-col w-full pb-8">
+<!-- Top Action & Search Bar -->
+<div class="flex flex-col gap-space-md mb-gutter">
+<div class="flex items-center justify-between">
+<div>
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">Staff Directory</h2>
+<p class="text-body-sm text-on-surface-variant">Manage department roles, access permissions, and profiles</p>
+</div>
+<button class="bg-primary text-on-primary px-space-md py-space-sm rounded-lg text-label-md flex items-center gap-space-xs shadow-sm hover:bg-secondary transition-all" onclick="openAddStaffModal()">
+<span class="material-symbols-outlined text-[18px]">person_add</span>
+<span>Add Staff</span>
+</button>
+</div>
+<!-- Search and Filters -->
+<div class="flex gap-space-sm items-center">
+<div class="relative flex-1">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[20px]">search</span>
+<input class="w-full bg-surface-container-low pl-10 pr-space-md py-3 rounded-lg text-body-md text-on-surface focus:outline-none focus:ring-1 focus:ring-secondary transition-all" id="staffSearch" oninput="filterStaff()" placeholder="Search by name, email, or role..." type="text"/>
+</div>
+<button class="bg-surface-container-low p-3 rounded-lg text-on-surface hover:bg-surface-container transition-all flex items-center justify-center" onclick="toggleFilterMenu()">
+<span class="material-symbols-outlined text-[20px]">tune</span>
+</button>
+</div>
+<!-- Filter Tags Bar -->
+<div class="flex gap-space-xs overflow-x-auto pb-1 no-scrollbar">
+<button class="dept-chip px-space-md py-1.5 rounded-full text-label-sm bg-primary text-on-primary whitespace-nowrap transition-all" onclick="filterByDept('all')">All Staff</button>
+<button class="dept-chip px-space-md py-1.5 rounded-full text-label-sm bg-surface-container-low text-on-surface-variant hover:bg-surface-container whitespace-nowrap transition-all" onclick="filterByDept('IT')">IT Services</button>
+<button class="dept-chip px-space-md py-1.5 rounded-full text-label-sm bg-surface-container-low text-on-surface-variant hover:bg-surface-container whitespace-nowrap transition-all" onclick="filterByDept('Academic')">Academic Ops</button>
+<button class="dept-chip px-space-md py-1.5 rounded-full text-label-sm bg-surface-container-low text-on-surface-variant hover:bg-surface-container whitespace-nowrap transition-all" onclick="filterByDept('Security')">SecOps</button>
+<button class="dept-chip px-space-md py-1.5 rounded-full text-label-sm bg-surface-container-low text-on-surface-variant hover:bg-surface-container whitespace-nowrap transition-all" onclick="filterByDept('Support')">Helpdesk</button>
+</div>
+</div>
+<!-- Staff List Container -->
+<div class="flex flex-col gap-space-sm" id="staffList">
+<!-- Staff Card 1 -->
+<div class="staff-card bg-surface-container-lowest p-space-md rounded-xl shadow-[0_4px_20px_-2px_rgba(11,15,25,0.03)] flex flex-col gap-space-md hover:shadow-md transition-all cursor-pointer" data-dept="IT" data-name="Dr. Elena Vance" data-role="Systems Architect" data-status="Active" onclick="openStaffDetails('Dr. Elena Vance', 'Systems Architect', 'IT Infrastructure', 'Active', 'elena.vance@college.edu', '+1 (555) 382-9102', 'Full Root Access, Network Management', 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&amp;fit=crop&amp;q=80&amp;w=256')">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-space-md">
+<div class="relative">
+<img class="w-12 h-12 rounded-full object-cover" data-alt="Professional studio portrait of an authoritative female IT systems architect with short dark hair, wearing a sharp navy blazer, confident smile, clean corporate lighting against an off-white academic background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuACRlTGoWB-73EyRUQqun5yJa3Qweq4m8IMKa05NckdyT8Fq7Gnj1IICLmjSuYtGiCRs8qv8AmlGy18l7cTLJy2logi_dZIWD2UJ4C5I11digFmMuHN4tem4yIZ_vsCI5nRHh0cviE1PbCtgaYPsTbg0F_iwUFbf3aFFCa1XF1NrbIC8Wy7EHlBqnc7Qa9bM7yIUlqj6prHf07-r33v4fzX4q25qpIlwc79N97QG_9swKkog00X8Eh7"/>
+<span class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 rounded-full ring-2 ring-surface-container-lowest"></span>
+</div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Dr. Elena Vance</h3>
+<p class="text-body-sm text-on-surface-variant">Systems Architect</p>
+</div>
+</div>
+<span class="px-space-sm py-1 bg-primary-fixed text-on-primary-fixed rounded-full text-label-sm">Active</span>
+</div>
+<div class="flex items-center justify-between pt-space-xs">
+<div class="flex items-center gap-space-xs text-on-surface-variant text-body-sm">
+<span class="material-symbols-outlined text-[16px]">domain</span>
+<span>IT Infrastructure</span>
+</div>
+<div class="flex items-center gap-space-xs text-secondary text-label-sm font-label-md">
+<span>View Profile</span>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+</div>
+</div>
+</div>
+<!-- Staff Card 2 -->
+<div class="staff-card bg-surface-container-lowest p-space-md rounded-xl shadow-[0_4px_20px_-2px_rgba(11,15,25,0.03)] flex flex-col gap-space-md hover:shadow-md transition-all cursor-pointer" data-dept="Security" data-name="Marcus Thorne" data-role="Cybersecurity Lead" data-status="Active" onclick="openStaffDetails('Marcus Thorne', 'Cybersecurity Lead', 'Security Operations', 'Active', 'marcus.thorne@college.edu', '+1 (555) 491-2839', 'Security Auditing, Firewall Control', 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&amp;fit=crop&amp;q=80&amp;w=256')">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-space-md">
+<div class="relative">
+<img class="w-12 h-12 rounded-full object-cover" data-alt="Professional portrait of a male cybersecurity lead with a focused expression, wearing a dark charcoal button-down shirt, crisp lighting, high contrast corporate photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBEYbp1-NffCxzouYnLO3BhitY15Wz-F1q-3T8F9PvnlZrEUT15gI0gSaHEbyV8m7ttW4zXRnVwFlFl2wwFig2QTnnLpvOsHPYm7oJQyGnq80V6nWdFsc7TycEZV8iTHsReUQlJjwDuHtDIsJsXA30t1X4RSqrWto_iPXikOLfH9tE9dEWjH2Nczf6pAYV4QaqWPGk8eVrr0L1hlBR9zkFLWNwdWYvuG0v267ATH-QujhvEs-XQG7TZ"/>
+<span class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 rounded-full ring-2 ring-surface-container-lowest"></span>
+</div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Marcus Thorne</h3>
+<p class="text-body-sm text-on-surface-variant">Cybersecurity Lead</p>
+</div>
+</div>
+<span class="px-space-sm py-1 bg-primary-fixed text-on-primary-fixed rounded-full text-label-sm">Active</span>
+</div>
+<div class="flex items-center justify-between pt-space-xs">
+<div class="flex items-center gap-space-xs text-on-surface-variant text-body-sm">
+<span class="material-symbols-outlined text-[16px]">domain</span>
+<span>Security Operations</span>
+</div>
+<div class="flex items-center gap-space-xs text-secondary text-label-sm font-label-md">
+<span>View Profile</span>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+</div>
+</div>
+</div>
+<!-- Staff Card 3 -->
+<div class="staff-card bg-surface-container-lowest p-space-md rounded-xl shadow-[0_4px_20px_-2px_rgba(11,15,25,0.03)] flex flex-col gap-space-md hover:shadow-md transition-all cursor-pointer" data-dept="Academic" data-name="Sarah Jenkins" data-role="Registrar Admin" data-status="Away" onclick="openStaffDetails('Sarah Jenkins', 'Registrar Admin', 'Academic Ops', 'Away', 'sarah.jenkins@college.edu', '+1 (555) 839-4920', 'Student Records, Grade Override, Enrollment', 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&amp;fit=crop&amp;q=80&amp;w=256')">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-space-md">
+<div class="relative">
+<img class="w-12 h-12 rounded-full object-cover" data-alt="Friendly female university registrar administrator smiling softly, professional business attire, warm lighting, minimalist academic backdrop." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDogX4_m6-GotnpuZ3In40G4D9CWc5HXmQriUwS0p2k43wiiMcXT4Xlg2qUEv2H5XLUZZwPyMTbtsP9e9fU1wgQn9upCL3V_4iQOmjOIAdhg8KQzSB-r09pTcuXAmMO0wMVg8u8jwnI9AWqsJliTCrCz7M8XYZdKFRukmZ8XSkJGbFc9D_YAnl1NoFoyXlSmOZn26zYV8kW5WWmOuo7zII5zygQQXNtvewPoVOPitxckSFu5FU8svQq"/>
+<span class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-amber-500 rounded-full ring-2 ring-surface-container-lowest"></span>
+</div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Sarah Jenkins</h3>
+<p class="text-body-sm text-on-surface-variant">Registrar Admin</p>
+</div>
+</div>
+<span class="px-space-sm py-1 bg-surface-container-high text-on-surface-variant rounded-full text-label-sm">Away</span>
+</div>
+<div class="flex items-center justify-between pt-space-xs">
+<div class="flex items-center gap-space-xs text-on-surface-variant text-body-sm">
+<span class="material-symbols-outlined text-[16px]">domain</span>
+<span>Academic Ops</span>
+</div>
+<div class="flex items-center gap-space-xs text-secondary text-label-sm font-label-md">
+<span>View Profile</span>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+</div>
+</div>
+</div>
+<!-- Staff Card 4 -->
+<div class="staff-card bg-surface-container-lowest p-space-md rounded-xl shadow-[0_4px_20px_-2px_rgba(11,15,25,0.03)] flex flex-col gap-space-md hover:shadow-md transition-all cursor-pointer" data-dept="Support" data-name="David Chen" data-role="Helpdesk Tier 2" data-status="Active" onclick="openStaffDetails('David Chen', 'Helpdesk Tier 2', 'IT Support', 'Active', 'david.chen@college.edu', '+1 (555) 293-8401', 'Hardware Dispatch, User Provisioning', 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&amp;fit=crop&amp;q=80&amp;w=256')">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-space-md">
+<div class="relative">
+<img class="w-12 h-12 rounded-full object-cover" data-alt="Portrait of a young male IT helpdesk technician wearing a casual button-down shirt, cheerful and approachable expression, bright studio light." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBJn1_CsXj4THG5QhrwB_d_c1NqHHkib6LeeOugHx0xRQQCaW5Fcsy5nEq9qEQyeJWVDJqfCXTnHLxd-BSoHdF94UFJvm4yCKLoHiv945L9t6w0s6cMUmuAVO70WNyCcK-a42vNK31DiyRKBqBejDnllFtkz2N9gMjTlxVyptb-tEb9NoTa01n8kztcDebj2Gtz_A1p6wjgWoEFAAp8ChcAjURm-u40palgxGoaYO0QTF5HnMuSUd7e"/>
+<span class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 rounded-full ring-2 ring-surface-container-lowest"></span>
+</div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">David Chen</h3>
+<p class="text-body-sm text-on-surface-variant">Helpdesk Tier 2</p>
+</div>
+</div>
+<span class="px-space-sm py-1 bg-primary-fixed text-on-primary-fixed rounded-full text-label-sm">Active</span>
+</div>
+<div class="flex items-center justify-between pt-space-xs">
+<div class="flex items-center gap-space-xs text-on-surface-variant text-body-sm">
+<span class="material-symbols-outlined text-[16px]">domain</span>
+<span>IT Support</span>
+</div>
+<div class="flex items-center gap-space-xs text-secondary text-label-sm font-label-md">
+<span>View Profile</span>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Empty State (Hidden by default) -->
+<div class="hidden flex flex-col items-center justify-center py-space-xl px-gutter text-center" id="emptyState">
+<div class="w-16 h-16 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant mb-space-md">
+<span class="material-symbols-outlined text-[32px]">person_search</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-space-xs">No staff members found</h3>
+<p class="text-body-sm text-on-surface-variant max-w-xs mb-space-md">We couldn't find anyone matching your search criteria. Try checking spelling or resetting filters.</p>
+<button class="bg-primary text-on-primary px-space-md py-2 rounded-lg text-label-md" onclick="resetSearch()">Clear Search</button>
+</div>
+<!-- Staff Details / Edit Modal (Hidden initially) -->
+<div class="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-gutter opacity-0 pointer-events-none transition-all duration-300" id="staffModal">
+<div class="bg-surface-container-lowest w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl shadow-xl flex flex-col max-h-[90vh] overflow-hidden translate-y-full sm:translate-y-0 transition-transform duration-300" id="modalContent">
+<!-- Modal Header -->
+<div class="p-space-md flex items-center justify-between bg-surface-container-low">
+<h3 class="font-headline-sm text-headline-sm text-on-surface" id="modalTitle">Staff Profile</h3>
+<button class="w-8 h-8 rounded-full flex items-center justify-center bg-surface-container text-on-surface hover:bg-surface-variant transition-all" onclick="closeModal()">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<!-- Modal Body -->
+<div class="p-space-md flex flex-col gap-space-md overflow-y-auto">
+<div class="flex items-center gap-space-md pb-space-md border-b border-surface-container">
+<img class="w-16 h-16 rounded-full object-cover" data-alt="Staff member profile placeholder image" id="modalAvatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCQX2paiyf1gw2Bs09W46Yfs89W3YVcTxYMoyEwAH1ZDpa4ufNVa9SJSST2uU-Uh1YnePlf87-mITww9ma_yfhgwhmuaHnE4_T2SRyFcFC2qqVjoVa5x2QgEuNQZIB2JsjmJyuIZ3-giuHKjyaGWQibb1ho-rs5Gjgrq0km1oL82fgdJMvgMzkPDOYoIfRbKImLvsOz5yhF_fad7cPZP3l6yYmPk1NNNWfnPAp7pqsDVL3cOyOAeVk6"/>
+<div>
+<h4 class="font-headline-md text-headline-md text-on-surface" id="modalName">Staff Name</h4>
+<p class="text-body-md text-on-surface-variant" id="modalRole">Role Title</p>
+<span class="inline-block mt-space-xs px-space-xs py-0.5 bg-primary-fixed text-on-primary-fixed rounded text-body-sm" id="modalStatusBadge">Active</span>
+</div>
+</div>
+<div class="flex flex-col gap-space-sm">
+<div class="flex justify-between py-1 border-b border-surface-container-low">
+<span class="text-body-sm text-on-surface-variant">Department</span>
+<span class="text-body-md font-label-md text-on-surface" id="modalDept">IT Infrastructure</span>
+</div>
+<div class="flex justify-between py-1 border-b border-surface-container-low">
+<span class="text-body-sm text-on-surface-variant">Email Address</span>
+<span class="text-body-md font-label-md text-on-surface" id="modalEmail">email@college.edu</span>
+</div>
+<div class="flex justify-between py-1 border-b border-surface-container-low">
+<span class="text-body-sm text-on-surface-variant">Phone Number</span>
+<span class="text-body-md font-label-md text-on-surface" id="modalPhone">+1 (555) 000-0000</span>
+</div>
+<div class="flex flex-col gap-1 py-1">
+<span class="text-body-sm text-on-surface-variant">Access Permissions</span>
+<p class="text-body-md text-on-surface bg-surface-container-low p-space-sm rounded-lg" id="modalPermissions">Full Root Access</p>
+</div>
+</div>
+</div>
+<!-- Modal Footer -->
+<div class="p-space-md bg-surface-container-low flex gap-space-sm justify-end">
+<button class="px-space-md py-2.5 rounded-lg border border-outline-variant text-on-surface text-label-md hover:bg-surface-container transition-all" onclick="closeModal()">Close</button>
+<button class="bg-secondary text-on-secondary px-space-md py-2.5 rounded-lg text-label-md flex items-center gap-space-xs hover:bg-secondary/90 transition-all" onclick="alert('Staff member permissions updated successfully!')">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+<span>Edit Profile</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Add Staff Modal -->
+<div class="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-gutter opacity-0 pointer-events-none transition-all duration-300" id="addStaffModal">
+<div class="bg-surface-container-lowest w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl shadow-xl flex flex-col max-h-[90vh] overflow-hidden translate-y-full sm:translate-y-0 transition-transform duration-300" id="addModalContent">
+<div class="p-space-md flex items-center justify-between bg-surface-container-low">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Add New Staff Member</h3>
+<button class="w-8 h-8 rounded-full flex items-center justify-center bg-surface-container text-on-surface hover:bg-surface-variant transition-all" onclick="closeAddStaffModal()">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<div class="p-space-md flex flex-col gap-space-md overflow-y-auto">
+<div class="flex flex-col gap-space-xs">
+<label class="text-label-sm text-on-surface-variant">Full Name</label>
+<input class="w-full bg-surface-container-low p-3 rounded-lg text-body-md text-on-surface focus:outline-none focus:ring-1 focus:ring-secondary" placeholder="e.g. Dr. Alex Mercer" type="text"/>
+</div>
+<div class="flex flex-col gap-space-xs">
+<label class="text-label-sm text-on-surface-variant">Role Title</label>
+<input class="w-full bg-surface-container-low p-3 rounded-lg text-body-md text-on-surface focus:outline-none focus:ring-1 focus:ring-secondary" placeholder="e.g. Network Administrator" type="text"/>
+</div>
+<div class="flex flex-col gap-space-xs">
+<label class="text-label-sm text-on-surface-variant">Department</label>
+<select class="w-full bg-surface-container-low p-3 rounded-lg text-body-md text-on-surface focus:outline-none focus:ring-1 focus:ring-secondary">
+<option>IT Infrastructure</option>
+<option>Security Operations</option>
+<option>Academic Ops</option>
+<option>IT Support</option>
+</select>
+</div>
+<div class="flex flex-col gap-space-xs">
+<label class="text-label-sm text-on-surface-variant">College Email</label>
+<input class="w-full bg-surface-container-low p-3 rounded-lg text-body-md text-on-surface focus:outline-none focus:ring-1 focus:ring-secondary" placeholder="name@college.edu" type="email"/>
+</div>
+</div>
+<div class="p-space-md bg-surface-container-low flex gap-space-sm justify-end">
+<button class="px-space-md py-2.5 rounded-lg border border-outline-variant text-on-surface text-label-md hover:bg-surface-container transition-all" onclick="closeAddStaffModal()">Cancel</button>
+<button class="bg-primary text-on-primary px-space-md py-2.5 rounded-lg text-label-md hover:bg-secondary transition-all" onclick="submitNewStaff()">Create Account</button>
+</div>
+</div>
+</div>
+<script>
+    let currentDept = 'all';
+
+    function filterStaff() {
+      const query = document.getElementById('staffSearch').value.toLowerCase();
+      const cards = document.querySelectorAll('.staff-card');
+      let visibleCount = 0;
+
+      cards.forEach(card => {
+        const name = card.getAttribute('data-name').toLowerCase();
+        const dept = card.getAttribute('data-dept').toLowerCase();
+        const role = card.getAttribute('data-role').toLowerCase();
+        
+        const matchesQuery = name.includes(query) || role.includes(query);
+        const matchesDept = currentDept === 'all' || card.getAttribute('data-dept') === currentDept;
+
+        if (matchesQuery && matchesDept) {
+          card.style.display = 'flex';
+          visibleCount++;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+
+      const emptyState = document.getElementById('emptyState');
+      if (visibleCount === 0) {
+        emptyState.classList.remove('hidden');
+      } else {
+        emptyState.classList.add('hidden');
+      }
+    }
+
+    function filterByDept(dept) {
+      currentDept = dept;
+      document.querySelectorAll('.dept-chip').forEach(chip => {
+        chip.classList.remove('bg-primary', 'text-on-primary');
+        chip.classList.add('bg-surface-container-low', 'text-on-surface-variant');
+      });
+      event.currentTarget.classList.remove('bg-surface-container-low', 'text-on-surface-variant');
+      event.currentTarget.classList.add('bg-primary', 'text-on-primary');
+      filterStaff();
+    }
+
+    function resetSearch() {
+      document.getElementById('staffSearch').value = '';
+      filterByDept('all');
+    }
+
+    function openStaffDetails(name, role, dept, status, email, phone, permissions, avatarUrl) {
+      document.getElementById('modalName').innerText = name;
+      document.getElementById('modalRole').innerText = role;
+      document.getElementById('modalDept').innerText = dept;
+      document.getElementById('modalStatusBadge').innerText = status;
+      document.getElementById('modalEmail').innerText = email;
+      document.getElementById('modalPhone').innerText = phone;
+      document.getElementById('modalPermissions').innerText = permissions;
+      document.getElementById('modalAvatar').src = avatarUrl;
+
+      const modal = document.getElementById('staffModal');
+      const content = document.getElementById('modalContent');
+      modal.classList.remove('opacity-0', 'pointer-events-none');
+      content.classList.remove('translate-y-full');
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('staffModal');
+      const content = document.getElementById('modalContent');
+      modal.classList.add('opacity-0', 'pointer-events-none');
+      content.classList.add('translate-y-full');
+    }
+
+    function openAddStaffModal() {
+      const modal = document.getElementById('addStaffModal');
+      const content = document.getElementById('addModalContent');
+      modal.classList.remove('opacity-0', 'pointer-events-none');
+      content.classList.remove('translate-y-full');
+    }
+
+    function closeAddStaffModal() {
+      const modal = document.getElementById('addStaffModal');
+      const content = document.getElementById('addModalContent');
+      modal.classList.add('opacity-0', 'pointer-events-none');
+      content.classList.add('translate-y-full');
+    }
+
+    function submitNewStaff() {
+      alert('New staff member account created successfully and verification email dispatched!');
+      closeAddStaffModal();
+    }
+
+    function toggleFilterMenu() {
+      alert('Advanced filter options: Filter by active status, role hierarchy, or last login timestamp.');
+    }
+  </script>
+</div></main><nav class="fixed bottom-0 inset-x-0 z-50 pb-safe bg-surface/90 backdrop-blur-xl shadow-[0_-1px_8px_rgba(0,0,0,0.04)]" data-active-classes="text-secondary"><div class="flex justify-around items-center h-20 px-space-xs"><a class="flex flex-col items-center justify-center gap-space-xs w-16 h-16 text-on-surface-variant hover:text-on-surface transition-all" data-path="dashboard" href="#"><span class="material-symbols-outlined">dashboard</span><span class="text-label-sm">Dashboard</span></a><a class="flex flex-col items-center justify-center gap-space-xs w-16 h-16 text-on-surface-variant hover:text-on-surface transition-all" data-path="students" href="#"><span class="material-symbols-outlined">school</span><span class="text-label-sm">Students</span></a><a aria-current="page" class="flex flex-col items-center justify-center gap-space-xs w-16 h-16 transition-all text-secondary" data-path="staff" href="#"><span class="material-symbols-outlined">badge</span><span class="text-label-sm">Staff</span></a><a class="flex flex-col items-center justify-center gap-space-xs w-16 h-16 text-on-surface-variant hover:text-on-surface transition-all" data-path="events" href="#"><span class="material-symbols-outlined">event</span><span class="text-label-sm">Events</span></a><a class="flex flex-col items-center justify-center gap-space-xs w-16 h-16 text-on-surface-variant hover:text-on-surface transition-all" data-path="settings" href="#"><span class="material-symbols-outlined">settings</span><span class="text-label-sm">More</span></a></div></nav></body></html>
