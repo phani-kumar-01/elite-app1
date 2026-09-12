@@ -240,11 +240,11 @@ class AppState extends ChangeNotifier {
         _notifications = supaNotifs;
       }
 
-      // 6. If Staff or Admin, fetch student and staff rosters
-      if (_currentUser.isStaff || _currentUser.isAdmin) {
-        final students = await _supabaseService.fetchStudentsList();
-        if (students.isNotEmpty) _studentsRoster = students;
+      // 6. Fetch student and staff rosters
+      final students = await _supabaseService.fetchStudentsList();
+      if (students.isNotEmpty) _studentsRoster = students;
 
+      if (_currentUser.isStaff || _currentUser.isAdmin) {
         final staff = await _supabaseService.fetchStaffList();
         if (staff.isNotEmpty) _staffRoster = staff;
       }

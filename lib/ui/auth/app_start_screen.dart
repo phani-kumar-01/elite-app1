@@ -219,7 +219,7 @@ class _PortalOptionCard extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(14),
             border: Border.all(color: AppColors.outline),
-            color: AppColors.surfaceContainerLow.withOpacity(0.5),
+            color: AppColors.surfaceContainerLow.withValues(alpha: 0.5),
           ),
           child: Row(
             children: [
@@ -227,7 +227,7 @@ class _PortalOptionCard extends StatelessWidget {
                 width: 48,
                 height: 48,
                 decoration: BoxDecoration(
-                  color: iconColor.withOpacity(0.12),
+                  color: iconColor.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(icon, color: iconColor, size: 24),

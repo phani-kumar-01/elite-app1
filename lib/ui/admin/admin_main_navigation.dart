@@ -74,7 +74,7 @@ class _AdminMainNavigationState extends State<AdminMainNavigation> {
             margin: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(
-              color: state.isSupabaseConnected ? Colors.green.withOpacity(0.12) : Colors.red.withOpacity(0.12),
+              color: state.isSupabaseConnected ? Colors.green.withValues(alpha: 0.12) : Colors.red.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(16),
             ),
             child: Row(
@@ -127,7 +127,7 @@ class _AdminMainNavigationState extends State<AdminMainNavigation> {
                       ),
                     ),
                     selected: isSel,
-                    selectedTileColor: AppColors.primary.withOpacity(0.08),
+                    selectedTileColor: AppColors.primary.withValues(alpha: 0.08),
                     onTap: () {
                       setState(() => _selectedSectionIndex = idx);
                       Navigator.pop(ctx);
@@ -312,7 +312,7 @@ class _AdminMainNavigationState extends State<AdminMainNavigation> {
                     ),
                     Chip(
                       label: Text(s.status, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
-                      backgroundColor: s.status == 'ACTIVE' ? Colors.green.withOpacity(0.12) : Colors.red.withOpacity(0.12),
+                      backgroundColor: s.status == 'ACTIVE' ? Colors.green.withValues(alpha: 0.12) : Colors.red.withValues(alpha: 0.12),
                     ),
                   ],
                 ),
@@ -380,7 +380,7 @@ class _AdminMainNavigationState extends State<AdminMainNavigation> {
                               Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                                 decoration: BoxDecoration(
-                                  color: AppColors.secondary.withOpacity(0.12),
+                                  color: AppColors.secondary.withValues(alpha: 0.12),
                                   borderRadius: BorderRadius.circular(4),
                                 ),
                                 child: Text(
@@ -537,7 +537,7 @@ class _AdminMainNavigationState extends State<AdminMainNavigation> {
                                         Container(
                                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                                           decoration: BoxDecoration(
-                                            color: Colors.green.withOpacity(0.12),
+                                            color: Colors.green.withValues(alpha: 0.12),
                                             borderRadius: BorderRadius.circular(4),
                                           ),
                                           child: Text(
@@ -627,7 +627,7 @@ class _AdminMainNavigationState extends State<AdminMainNavigation> {
                                   Container(
                                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                                     decoration: BoxDecoration(
-                                      color: Colors.green.withOpacity(0.12),
+                                      color: Colors.green.withValues(alpha: 0.12),
                                       borderRadius: BorderRadius.circular(4),
                                     ),
                                     child: Text(

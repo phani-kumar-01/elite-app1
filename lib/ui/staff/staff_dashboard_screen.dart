@@ -378,7 +378,7 @@ class _StaffDashboardScreenState extends State<StaffDashboardScreen> {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                       decoration: BoxDecoration(
-                        color: s.status == 'ACTIVE' ? Colors.green.withOpacity(0.12) : Colors.red.withOpacity(0.12),
+                        color: s.status == 'ACTIVE' ? Colors.green.withValues(alpha: 0.12) : Colors.red.withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
@@ -408,9 +408,9 @@ class _StaffDashboardScreenState extends State<StaffDashboardScreen> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: AppColors.primary.withOpacity(0.08),
+              color: AppColors.primary.withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: AppColors.primary.withOpacity(0.25)),
+              border: Border.all(color: AppColors.primary.withValues(alpha: 0.25)),
             ),
             child: Row(
               children: [
@@ -441,7 +441,7 @@ class _StaffDashboardScreenState extends State<StaffDashboardScreen> {
                 Text('Scan Target & Location', style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 13)),
                 const SizedBox(height: 10),
                 DropdownButtonFormField<String>(
-                  value: _selectedEventForScan,
+                  initialValue: _selectedEventForScan,
                   decoration: const InputDecoration(
                     labelText: 'Target Event / Class',
                     isDense: true,
@@ -452,7 +452,7 @@ class _StaffDashboardScreenState extends State<StaffDashboardScreen> {
                 ),
                 const SizedBox(height: 12),
                 DropdownButtonFormField<String>(
-                  value: _selectedSessionForScan,
+                  initialValue: _selectedSessionForScan,
                   decoration: const InputDecoration(
                     labelText: 'Turnstile Gate / Hall',
                     isDense: true,
@@ -484,7 +484,7 @@ class _StaffDashboardScreenState extends State<StaffDashboardScreen> {
                   width: 70,
                   height: 70,
                   decoration: BoxDecoration(
-                    color: AppColors.secondary.withOpacity(0.12),
+                    color: AppColors.secondary.withValues(alpha: 0.12),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(Icons.qr_code_scanner, color: AppColors.secondary, size: 36),
@@ -535,7 +535,7 @@ class _StaffDashboardScreenState extends State<StaffDashboardScreen> {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: _isScanSuccess ? Colors.green.withOpacity(0.1) : Colors.red.withOpacity(0.1),
+                      color: _isScanSuccess ? Colors.green.withValues(alpha: 0.1) : Colors.red.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(color: _isScanSuccess ? Colors.green : Colors.red),
                     ),
@@ -627,7 +627,7 @@ class _StaffDashboardScreenState extends State<StaffDashboardScreen> {
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: Colors.amber.withOpacity(0.12),
+              color: Colors.amber.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(8),
               border: Border.all(color: Colors.amber.shade700),
             ),
@@ -697,7 +697,7 @@ class _StaffDashboardScreenState extends State<StaffDashboardScreen> {
                 ),
                 const SizedBox(height: 12),
                 DropdownButtonFormField<String>(
-                  value: _notifCategory,
+                  initialValue: _notifCategory,
                   decoration: const InputDecoration(labelText: 'Category', isDense: true),
                   items: const [
                     DropdownMenuItem(value: 'Urgent', child: Text('Urgent / Immediate Alert')),
@@ -865,7 +865,7 @@ class _StaffDashboardScreenState extends State<StaffDashboardScreen> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 decoration: BoxDecoration(
-                  color: n.category == 'Urgent' ? AppColors.error.withOpacity(0.12) : AppColors.secondary.withOpacity(0.12),
+                  color: n.category == 'Urgent' ? AppColors.error.withValues(alpha: 0.12) : AppColors.secondary.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: Text(n.category, style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: n.category == 'Urgent' ? AppColors.error : AppColors.secondary)),
@@ -940,7 +940,7 @@ class _StaffDashboardScreenState extends State<StaffDashboardScreen> {
             children: [
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                decoration: BoxDecoration(color: AppColors.primary.withOpacity(0.12), borderRadius: BorderRadius.circular(4)),
+                decoration: BoxDecoration(color: AppColors.primary.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(4)),
                 child: Text(e.category, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: AppColors.primary)),
               ),
               Text('$registered / $cap Registered', style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600)),
@@ -1265,7 +1265,7 @@ class _StaffDashboardScreenState extends State<StaffDashboardScreen> {
                                         Container(
                                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                                           decoration: BoxDecoration(
-                                            color: Colors.green.withOpacity(0.12),
+                                            color: Colors.green.withValues(alpha: 0.12),
                                             borderRadius: BorderRadius.circular(4),
                                           ),
                                           child: Text(
@@ -1368,7 +1368,7 @@ class _StaffDashboardScreenState extends State<StaffDashboardScreen> {
                                   Container(
                                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                                     decoration: BoxDecoration(
-                                      color: Colors.green.withOpacity(0.12),
+                                      color: Colors.green.withValues(alpha: 0.12),
                                       borderRadius: BorderRadius.circular(4),
                                     ),
                                     child: Text(

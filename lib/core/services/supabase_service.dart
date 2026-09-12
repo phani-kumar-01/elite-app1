@@ -824,7 +824,7 @@ class SupabaseService extends ChangeNotifier {
         query = query.or('roll_no.ilike.%$q%,name.ilike.%$q%');
       }
 
-      final res = await query.order('roll_no', ascending: true).limit(100);
+      final res = await query.order('roll_no', ascending: true).limit(500);
 
       return res.map((s) => UserModel(
         id: s['user_id']?.toString() ?? '',
