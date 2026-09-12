@@ -526,22 +526,13 @@ class QrPassDialog extends StatelessWidget {
 
                   SizedBox(
                     width: double.infinity,
-                    child: ElevatedButton.icon(
-                      onPressed: () {
-                        Navigator.pop(context);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Turnstile Entry Verified via ELITE NFC/QR!'),
-                            backgroundColor: AppColors.success,
-                          ),
-                        );
-                      },
+                    child: ElevatedButton(
+                      onPressed: () => Navigator.pop(context),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primary,
                         padding: const EdgeInsets.symmetric(vertical: 14),
                       ),
-                      icon: const Icon(Icons.check, size: 18),
-                      label: const Text('Simulate Turnstile Entry'),
+                      child: const Text('Close Pass'),
                     ),
                   ),
                 ],

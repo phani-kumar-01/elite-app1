@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../core/theme/app_theme.dart';
@@ -148,7 +148,7 @@ class AttendanceScreen extends StatelessWidget {
             ...state.subjectAttendance.map((sub) => _subjectCard(sub)),
             const SizedBox(height: 22),
 
-            // Turnstile & Check-in History Log
+            // Attendance History Log
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -160,23 +160,15 @@ class AttendanceScreen extends StatelessWidget {
                     color: AppColors.onSurface,
                   ),
                 ),
-                TextButton.icon(
-                  onPressed: () {
-                    state.addAttendanceLog(
-                      subject: "CS301 Cloud Architecture Lab",
-                      room: "Turnstile Gate #2",
-                    );
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Simulated turnstile check-in logged!'),
-                        backgroundColor: AppColors.success,
-                      ),
-                    );
-                  },
-                  icon: const Icon(Icons.nfc, size: 16, color: AppColors.secondary),
-                  label: Text(
-                    'Simulate Check-in',
-                    style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.secondary),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: AppColors.secondaryContainer,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    '${state.attendanceLogs.length} Records',
+                    style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.onSecondaryContainer),
                   ),
                 ),
               ],

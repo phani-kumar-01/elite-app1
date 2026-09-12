@@ -151,9 +151,7 @@ class StudentProfileScreen extends StatelessWidget {
                   const Divider(height: 1, color: AppColors.outline),
                   _infoTile('Department', user.department, Icons.domain),
                   const Divider(height: 1, color: AppColors.outline),
-                  _infoTile('Assigned Research Lab', user.labPassRoom, Icons.science_outlined),
-                  const Divider(height: 1, color: AppColors.outline),
-                  _infoTile('RFID Turnstile Token', 'Paired (Card UID: 9A:8F:2C)', Icons.nfc),
+                  _infoTile('Assigned Academic Lab', user.labPassRoom, Icons.science_outlined),
                 ],
               ),
             ),
@@ -161,7 +159,7 @@ class StudentProfileScreen extends StatelessWidget {
 
             // Settings & Preferences
             Text(
-              'Security & Device Settings',
+              'Security & App Settings',
               style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w700, color: AppColors.onSurface),
             ),
             const SizedBox(height: 10),
@@ -173,20 +171,17 @@ class StudentProfileScreen extends StatelessWidget {
               ),
               child: Column(
                 children: [
-                  _switchTile('Biometric Fast Authentication', true, Icons.fingerprint),
+                  _switchTile('Push Notifications for Event Alerts', true, Icons.notifications_active_outlined),
                   const Divider(height: 1, color: AppColors.outline),
-                  _switchTile('Push Notifications for Lab Alerts', true, Icons.notifications_active_outlined),
-                  const Divider(height: 1, color: AppColors.outline),
-                                    _actionTile(context, 'Department Contacts Directory', Icons.contacts_outlined, onTap: () {
+                  _actionTile(context, 'Department Contacts Directory', Icons.contacts_outlined, onTap: () {
                     Navigator.push(context, MaterialPageRoute(builder: (_) => const ContactsScreen()));
                   }),
                   const Divider(height: 1, color: AppColors.outline),
-                  
                   _actionTile(context, 'Device Permissions Hub (Camera, Contacts, Alerts)', Icons.security, onTap: () {
                     PermissionDialog.show(context);
                   }),
                   const Divider(height: 1, color: AppColors.outline),
-                  _actionTile(context, 'Change Security PIN / Password', Icons.lock_outline),
+                  _actionTile(context, 'Change Account Password', Icons.lock_outline),
                 ],
               ),
             ),

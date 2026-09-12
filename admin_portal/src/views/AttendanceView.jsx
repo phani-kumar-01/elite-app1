@@ -104,7 +104,7 @@ export default function AttendanceView({ isCheckInOpen, setIsCheckInOpen }) {
             Turnstile Gates & Department Labs Access Feed
           </h2>
           <p style={{ color: 'var(--text-muted)', fontSize: '12px' }}>
-            Monitoring NFC passes, QR tokens, and RFID student verification in real-time.
+            Monitoring digital QR passes, event check-ins, and student verification in real-time.
           </p>
         </div>
 

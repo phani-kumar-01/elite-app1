@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../core/theme/app_theme.dart';
@@ -307,29 +307,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                       const Icon(Icons.arrow_forward, size: 16),
                                     ],
                                   ),
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-
-                        // Biometrics / SSO Button
-                        SizedBox(
-                          width: double.infinity,
-                          height: 46,
-                          child: OutlinedButton.icon(
-                            onPressed: _handleSignIn,
-                            style: OutlinedButton.styleFrom(
-                              side: const BorderSide(color: AppColors.outline),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                            ),
-                            icon: const Icon(Icons.fingerprint, size: 20, color: AppColors.secondary),
-                            label: Text(
-                              'Sign in with Biometrics / NFC Pass',
-                              style: GoogleFonts.inter(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.onSurface,
-                              ),
-                            ),
                           ),
                         ),
                       ],
