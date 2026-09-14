@@ -1,11 +1,15 @@
+import 'dart:async';
+import 'dart:typed_data';
 export '../data/models/app_models.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../data/models/app_models.dart';
 import '../data/repositories/mock_repository.dart';
 import '../core/services/supabase_service.dart';
 
 class AppState extends ChangeNotifier {
   final SupabaseService _supabaseService;
+  Timer? _syncTimer;
 
   UserModel? _currentUser;
   List<EventModel> _events = MockRepository.getInitialEvents();
@@ -24,36 +28,80 @@ class AppState extends ChangeNotifier {
 
   String _selectedEventCategory = "All";
   bool _isLoadingFromSupabase = false;
+  bool _isRestoringSession = true;
 
   AppState([SupabaseService? supabaseService])
       : _supabaseService = supabaseService ?? SupabaseService() {
     _leaderboard = _supabaseService.getLiveLeaderboard();
     _restoreSession();
+
+    // 1. Parallel Realtime Sync with Supabase (instant WebSocket updates)
+    _supabaseService.subscribeToRealtimeChanges(() {
+      if (isLoggedIn) {
+        debugPrint('⚡ Realtime parallel sync triggered in Flutter App');
+        syncFromSupabase();
+      }
+    });
+
+    // 2. High-frequency parallel sync interval (every 5 seconds)
+    _syncTimer = Timer.periodic(const Duration(seconds: 5), (_) {
+      if (isLoggedIn) {
+        syncFromSupabase();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _syncTimer?.cancel();
+    super.dispose();
   }
 
   Future<void> _restoreSession() async {
-    final client = SupabaseService.client;
-    if (client == null) return;
+    _isRestoringSession = true;
+    _isLoadingFromSupabase = true;
+    notifyListeners();
+
     try {
-      final session = client.auth.currentSession;
-      if (session != null && session.user.email != null) {
-        _isLoadingFromSupabase = true;
-        notifyListeners();
-        final profile = await _supabaseService.fetchUserProfile(session.user.email!);
-        if (profile != null) {
+      final prefs = await SharedPreferences.getInstance();
+      final bool isActive = prefs.getBool('elite_session_active') ?? false;
+      final String? savedUserId = prefs.getString('elite_session_user_id');
+      final String? savedEmail = prefs.getString('elite_session_email');
+
+      if (isActive && ((savedUserId != null && savedUserId.isNotEmpty) || (savedEmail != null && savedEmail.isNotEmpty))) {
+        debugPrint('AppState: Restoring persisted user session for ID=$savedUserId, email=$savedEmail');
+        UserModel? profile;
+        if (savedUserId != null && savedUserId.isNotEmpty) {
+          profile = await _supabaseService.fetchUserProfileById(savedUserId);
+        }
+        if (profile == null && savedEmail != null && savedEmail.isNotEmpty) {
+          profile = await _supabaseService.fetchUserProfile(savedEmail);
+        }
+
+        if (profile != null && profile.id.isNotEmpty) {
           _currentUser = profile;
           await syncFromSupabase();
+          debugPrint('AppState: Successfully restored session for ${profile.name} (${profile.role})');
+        } else {
+          debugPrint('AppState: Persisted user profile not found on Supabase. Clearing stale session.');
+          await prefs.remove('elite_session_active');
+          await prefs.remove('elite_session_user_id');
+          await prefs.remove('elite_session_email');
+          await prefs.remove('elite_session_roll');
+          await prefs.remove('elite_session_role');
         }
       }
     } catch (e) {
       debugPrint('AppState._restoreSession error: $e');
     } finally {
       _isLoadingFromSupabase = false;
+      _isRestoringSession = false;
       notifyListeners();
     }
   }
 
   UserModel get currentUser => _currentUser ?? UserModel.empty();
+  bool get isRestoringSession => _isRestoringSession;
   bool get isLoggedIn => _currentUser != null && _currentUser!.id.isNotEmpty;
   bool get isStudent => _currentUser?.isStudent == true;
   bool get isStaff => _currentUser?.isStaff == true;
@@ -126,6 +174,21 @@ class AppState extends ChangeNotifier {
 
       if (profile != null) {
         _currentUser = profile;
+
+        // Persist session to device storage so app restart keeps user logged in
+        try {
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setBool('elite_session_active', true);
+          await prefs.setString('elite_session_user_id', profile.id);
+          await prefs.setString('elite_session_email', profile.email);
+          await prefs.setString('elite_session_roll', profile.rollNumber);
+          await prefs.setString('elite_session_role', profile.role.name);
+          await prefs.setInt('elite_session_timestamp', DateTime.now().millisecondsSinceEpoch);
+          debugPrint('AppState: Session securely persisted for ${profile.email} (${profile.role.name})');
+        } catch (err) {
+          debugPrint('AppState: Warning persisting session: $err');
+        }
+
         await syncFromSupabase();
         _isLoadingFromSupabase = false;
         notifyListeners();
@@ -143,6 +206,20 @@ class AppState extends ChangeNotifier {
   }
 
   Future<void> logout() async {
+    // Explicit logout only
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove('elite_session_active');
+      await prefs.remove('elite_session_user_id');
+      await prefs.remove('elite_session_email');
+      await prefs.remove('elite_session_roll');
+      await prefs.remove('elite_session_role');
+      await prefs.remove('elite_session_timestamp');
+      debugPrint('AppState: Explicit logout - cleared session from device storage.');
+    } catch (err) {
+      debugPrint('AppState: Error clearing local session on logout: $err');
+    }
+
     try {
       await SupabaseService.client?.auth.signOut();
     } catch (_) {}
@@ -184,7 +261,10 @@ class AppState extends ChangeNotifier {
       // 3. Fetch live events
       final supaEvents = await _supabaseService.fetchEvents();
       if (supaEvents.isNotEmpty) {
-        final registeredIds = await _supabaseService.fetchUserRegisteredEventIds(currentUser.id);
+        final registeredIds = await _supabaseService.fetchUserRegisteredEventIds(
+          currentUser.id,
+          rollNumber: currentUser.rollNumber,
+        );
         for (var ev in supaEvents) {
           if (registeredIds.contains(ev.id)) {
             ev.isRegistered = true;
@@ -375,6 +455,46 @@ class AppState extends ChangeNotifier {
     } else {
       await registerIndividualEvent(eventId: eventId);
     }
+  }
+
+  // ─── Project Submission & Voting ───────────────────────────────────────────
+
+  Future<Map<String, dynamic>?> getTeamRegistration(String eventId) async {
+    return _supabaseService.fetchTeamRegistrationForUser(
+      eventId,
+      currentUser.id,
+      rollNumber: currentUser.rollNumber,
+    );
+  }
+
+  Future<ProjectSubmissionModel?> getTeamProjectSubmission(String eventId, String registrationId) async {
+    return _supabaseService.fetchTeamProjectSubmission(eventId, registrationId);
+  }
+
+  Future<Map<String, dynamic>> submitTeamProject(ProjectSubmissionModel project) async {
+    return _supabaseService.submitProjectSubmission(project);
+  }
+
+  Future<String?> uploadProjectImage(Uint8List bytes, String ext, {String? fileName}) async {
+    return _supabaseService.uploadProjectImage(bytes, ext, fileName: fileName);
+  }
+
+  Future<List<ProjectSubmissionModel>> getPublishedProjects(String eventId) async {
+    return _supabaseService.fetchPublishedProjects(eventId);
+  }
+
+  Future<bool> hasVotedInEvent(String eventId) async {
+    return _supabaseService.hasUserVotedForEvent(eventId, currentUser.id);
+  }
+
+  Future<Map<String, dynamic>> castProjectVote(String eventId, String projectId) async {
+    final role = currentUser.isStaff ? 'STAFF' : 'STUDENT';
+    return _supabaseService.castProjectVote(
+      eventId: eventId,
+      projectId: projectId,
+      voterId: currentUser.id,
+      voterRole: role,
+    );
   }
 
   // ─── Event Management (Staff & Admin) ──────────────────────────────────────

@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../../core/theme/app_theme.dart';
@@ -221,7 +221,14 @@ class ContactsScreen extends StatelessWidget {
               const SizedBox(width: 14),
               const Icon(Icons.room, size: 14, color: AppColors.onSurfaceVariant),
               const SizedBox(width: 4),
-              Text(c.room, style: GoogleFonts.inter(fontSize: 11, color: AppColors.onSurfaceVariant)),
+              Expanded(
+                child: Text(
+                  c.room,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.inter(fontSize: 11, color: AppColors.onSurfaceVariant),
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 12),

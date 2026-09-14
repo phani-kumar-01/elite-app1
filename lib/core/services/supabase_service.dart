@@ -49,6 +49,28 @@ class SupabaseService extends ChangeNotifier {
     notifyListeners();
   }
 
+  RealtimeChannel? _realtimeChannel;
+
+  void subscribeToRealtimeChanges(VoidCallback onTableChanged) {
+    final c = client;
+    if (c == null) return;
+    try {
+      _realtimeChannel?.unsubscribe();
+      _realtimeChannel = c.channel('public_live_sync')
+        ..onPostgresChanges(
+          event: PostgresChangeEvent.all,
+          schema: 'public',
+          callback: (payload) {
+            debugPrint('⚡ Supabase Realtime event in Flutter: ${payload.table}');
+            onTableChanged();
+          },
+        )
+        ..subscribe();
+    } catch (e) {
+      debugPrint('Error subscribing to Supabase Realtime: $e');
+    }
+  }
+
 
   // ─── User Profile & Role Resolution ─────────────────────────────────────────
 
@@ -223,11 +245,26 @@ class SupabaseService extends ChangeNotifier {
         final regCount = (row['registered_count'] as num?)?.toInt() ?? 0;
         final title = (row['title'] ?? '').toString();
         final cat = (row['event_type'] ?? 'Technical').toString();
+        final partType = (row['participation_type'] ?? '').toString();
         final isTeam = row['is_team'] == true ||
+            partType.toLowerCase().contains('team') ||
             cat.toLowerCase().contains('hackathon') ||
-            title.toLowerCase().contains('quiz') ||
             title.toLowerCase().contains('hackathon') ||
-            title.toLowerCase().contains('expo');
+            title.toLowerCase().contains('vibe') ||
+            title.toLowerCase().contains('pitch');
+
+        final isProjEnabled = row['is_project_submission_enabled'] == true || isTeam;
+        final projDeadline = row['project_submission_deadline'] != null
+            ? DateTime.tryParse(row['project_submission_deadline'].toString())
+            : DateTime(2026, 9, 15, 18, 0);
+
+        final isVoteEnabled = row['is_voting_enabled'] == true;
+        final vStart = row['voting_start'] != null ? DateTime.tryParse(row['voting_start'].toString()) : null;
+        final vEnd = row['voting_end'] != null ? DateTime.tryParse(row['voting_end'].toString()) : null;
+        List<String> vRoles = ['STUDENT', 'STAFF'];
+        if (row['voting_eligible_roles'] is List) {
+          vRoles = (row['voting_eligible_roles'] as List).map((e) => e.toString()).toList();
+        }
 
         list.add(EventModel(
           id: row['id'].toString(),
@@ -247,6 +284,12 @@ class SupabaseService extends ChangeNotifier {
           isTeamEvent: isTeam,
           minTeamSize: isTeam ? 2 : 1,
           maxTeamSize: isTeam ? 4 : 1,
+          isProjectSubmissionEnabled: isProjEnabled,
+          projectSubmissionDeadline: projDeadline,
+          isVotingEnabled: isVoteEnabled,
+          votingStart: vStart,
+          votingEnd: vEnd,
+          votingEligibleRoles: vRoles,
         ));
       }
       return list;
@@ -475,21 +518,302 @@ class SupabaseService extends ChangeNotifier {
     }
   }
 
-  Future<List<String>> fetchUserRegisteredEventIds(String userId) async {
+  Future<List<String>> fetchUserRegisteredEventIds(String userId, {String? rollNumber}) async {
     final c = client;
     if (c == null) return [];
 
     try {
       final res = await c
           .from('event_registrations')
-          .select('event_id')
-          .eq('student_id', userId);
-      return res.map((r) => r['event_id'].toString()).toList();
+          .select('event_id, student_id, student_roll, members');
+
+      final Set<String> registeredEventIds = {};
+      final uId = userId.trim().toLowerCase();
+      final uRoll = (rollNumber ?? '').trim().toUpperCase();
+
+      for (final r in res) {
+        final evId = r['event_id']?.toString();
+        if (evId == null) continue;
+
+        // 1. Direct leader / individual registration
+        final sId = r['student_id']?.toString().toLowerCase();
+        final sRoll = r['student_roll']?.toString().toUpperCase();
+        if (sId == uId || (uRoll.isNotEmpty && sRoll == uRoll)) {
+          registeredEventIds.add(evId);
+          continue;
+        }
+
+        // 2. Team membership check in members JSON
+        final membersData = r['members'];
+        if (membersData is List) {
+          for (final m in membersData) {
+            if (m is Map) {
+              final mId = m['student_id']?.toString().toLowerCase() ?? m['studentId']?.toString().toLowerCase();
+              final mRoll = m['student_roll']?.toString().toUpperCase() ?? m['studentRoll']?.toString().toUpperCase();
+              if (mId == uId || (uRoll.isNotEmpty && mRoll == uRoll)) {
+                registeredEventIds.add(evId);
+                break;
+              }
+            }
+          }
+        }
+      }
+
+      return registeredEventIds.toList();
     } catch (e) {
       debugPrint('Supabase fetchUserRegisteredEventIds error: $e');
       return [];
     }
   }
+
+  // ─── Team Registration Details Lookup ───────────────────────────────────────
+
+  Future<Map<String, dynamic>?> fetchTeamRegistrationForUser(
+    String eventId,
+    String userId, {
+    String? rollNumber,
+  }) async {
+    final c = client;
+    if (c == null) return null;
+
+    try {
+      final res = await c
+          .from('event_registrations')
+          .select()
+          .eq('event_id', eventId);
+
+      final uId = userId.trim().toLowerCase();
+      final uRoll = (rollNumber ?? '').trim().toUpperCase();
+
+      for (final r in res) {
+        final sId = r['student_id']?.toString().toLowerCase();
+        final sRoll = r['student_roll']?.toString().toUpperCase();
+
+        final isLeader = (sId == uId || (uRoll.isNotEmpty && sRoll == uRoll));
+
+        bool isMember = false;
+        final membersData = r['members'];
+        if (membersData is List) {
+          for (final m in membersData) {
+            if (m is Map) {
+              final mId = m['student_id']?.toString().toLowerCase() ?? m['studentId']?.toString().toLowerCase();
+              final mRoll = m['student_roll']?.toString().toUpperCase() ?? m['studentRoll']?.toString().toUpperCase();
+              if (mId == uId || (uRoll.isNotEmpty && mRoll == uRoll)) {
+                isMember = true;
+                break;
+              }
+            }
+          }
+        }
+
+        if (isLeader || isMember) {
+          return {
+            'registrationId': r['id']?.toString() ?? '',
+            'teamName': r['team_name']?.toString() ?? 'Team',
+            'isLeader': isLeader,
+            'role': isLeader ? 'Team Leader' : 'Team Member',
+            'leaderName': r['student_name']?.toString() ?? 'Leader',
+            'leaderRoll': r['student_roll']?.toString() ?? '',
+            'membersCount': (membersData is List) ? membersData.length : 1,
+            'isTeam': r['is_team'] == true,
+          };
+        }
+      }
+      return null;
+    } catch (e) {
+      debugPrint('Supabase fetchTeamRegistrationForUser error: $e');
+      return null;
+    }
+  }
+
+  // ─── Project Submission & Image Upload ──────────────────────────────────────
+
+  Future<ProjectSubmissionModel?> fetchTeamProjectSubmission(
+    String eventId,
+    String registrationId,
+  ) async {
+    final c = client;
+    if (c == null) return null;
+
+    try {
+      final res = await c
+          .from('project_submissions')
+          .select()
+          .eq('event_id', eventId)
+          .eq('registration_id', registrationId)
+          .maybeSingle();
+
+      if (res != null) {
+        return ProjectSubmissionModel.fromJson(res);
+      }
+      return null;
+    } catch (e) {
+      debugPrint('Supabase fetchTeamProjectSubmission error: $e');
+      return null;
+    }
+  }
+
+  Future<List<ProjectSubmissionModel>> fetchPublishedProjects(String eventId) async {
+    final c = client;
+    if (c == null) return [];
+
+    try {
+      final res = await c
+          .from('project_submissions')
+          .select()
+          .eq('event_id', eventId)
+          .eq('status', 'PUBLISHED')
+          .order('created_at', ascending: false);
+
+      return (res as List)
+          .map((item) => ProjectSubmissionModel.fromJson(item as Map<String, dynamic>))
+          .toList();
+    } catch (e) {
+      debugPrint('Supabase fetchPublishedProjects error: $e');
+      return [];
+    }
+  }
+
+  Future<String?> uploadProjectImage(
+    Uint8List imageBytes,
+    String fileExtension, {
+    String? fileName,
+  }) async {
+    final c = client;
+    if (c == null) return null;
+
+    try {
+      final ext = fileExtension.replaceAll('.', '').toLowerCase();
+      final name = fileName ?? 'proj_${DateTime.now().millisecondsSinceEpoch}.$ext';
+      final path = 'submissions/$name';
+
+      await c.storage.from('project_assets').uploadBinary(
+        path,
+        imageBytes,
+        fileOptions: FileOptions(
+          contentType: ext == 'png' ? 'image/png' : 'image/jpeg',
+          upsert: true,
+        ),
+      );
+
+      final publicUrl = c.storage.from('project_assets').getPublicUrl(path);
+      return publicUrl;
+    } catch (e) {
+      debugPrint('Supabase uploadProjectImage error: $e');
+      return null;
+    }
+  }
+
+  Future<Map<String, dynamic>> submitProjectSubmission(ProjectSubmissionModel project) async {
+    final c = client;
+    if (c == null) {
+      return {'success': false, 'message': 'Supabase client is not connected'};
+    }
+
+    try {
+      await c.from('project_submissions').upsert({
+        'id': project.id,
+        'event_id': project.eventId,
+        'registration_id': project.registrationId,
+        'team_name': project.teamName,
+        'leader_id': project.leaderId,
+        'leader_name': project.leaderName,
+        'project_name': project.projectName,
+        'short_description': project.shortDescription,
+        'detailed_description': project.detailedDescription,
+        'technologies': project.technologies,
+        'repo_url': project.repoUrl,
+        'demo_url': project.demoUrl,
+        'documentation_url': project.documentationUrl,
+        'presentation_url': project.presentationUrl,
+        'image_url': project.imageUrl,
+        'status': project.status,
+      });
+
+      return {'success': true, 'message': 'Project submitted successfully!'};
+    } catch (e) {
+      final msg = e.toString();
+      debugPrint('Supabase submitProjectSubmission error: $e');
+      if (msg.toLowerCase().contains('deadline') || msg.toLowerCase().contains('locked')) {
+        return {
+          'success': false,
+          'message': 'Submission Locked: The deadline has passed. Changes cannot be saved.',
+        };
+      }
+      return {'success': false, 'message': 'Error saving project: $e'};
+    }
+  }
+
+  // ─── Project Voting (One User = One Vote) ───────────────────────────────────
+
+  Future<bool> hasUserVotedForEvent(String eventId, String voterId) async {
+    final c = client;
+    if (c == null) return false;
+
+    try {
+      final res = await c
+          .from('project_votes')
+          .select('id')
+          .eq('event_id', eventId)
+          .eq('voter_id', voterId)
+          .maybeSingle();
+
+      return res != null;
+    } catch (e) {
+      debugPrint('Supabase hasUserVotedForEvent error: $e');
+      return false;
+    }
+  }
+
+  Future<Map<String, dynamic>> castProjectVote({
+    required String eventId,
+    required String projectId,
+    required String voterId,
+    required String voterRole,
+  }) async {
+    final c = client;
+    if (c == null) {
+      return {'success': false, 'message': 'Supabase client is not connected'};
+    }
+
+    try {
+      final voteId = 'vote_${eventId}_$voterId';
+      await c.from('project_votes').insert({
+        'id': voteId,
+        'event_id': eventId,
+        'project_id': projectId,
+        'voter_id': voterId,
+        'voter_role': voterRole.toUpperCase(),
+        'voted_at': DateTime.now().toIso8601String(),
+      });
+
+      return {
+        'success': true,
+        'message': 'Vote Recorded: Your response has been submitted.',
+      };
+    } catch (e) {
+      final msg = e.toString();
+      debugPrint('Supabase castProjectVote error: $e');
+      if (msg.contains('23505') || msg.toLowerCase().contains('duplicate') || msg.toLowerCase().contains('unique')) {
+        return {
+          'success': false,
+          'message': 'You have already voted for this event. You cannot change your vote.',
+        };
+      }
+      if (msg.toLowerCase().contains('ended')) {
+        return {'success': false, 'message': 'Voting has ended.'};
+      }
+      if (msg.toLowerCase().contains('not started')) {
+        return {'success': false, 'message': 'Voting has not started yet.'};
+      }
+      if (msg.toLowerCase().contains('not eligible')) {
+        return {'success': false, 'message': 'Your role is not eligible to vote in this event.'};
+      }
+      return {'success': false, 'message': 'Error recording vote: $e'};
+    }
+  }
+
+
 
   // ─── QR Attendance (Scanner for Staff & Admin Only) ─────────────────────────
 
@@ -634,6 +958,8 @@ class SupabaseService extends ChangeNotifier {
           id: o['id'].toString(),
           text: o['text'] ?? '',
           votes: (o['vote_count'] as num?)?.toInt() ?? 0,
+          imageUrl: o['image_url']?.toString(),
+          description: o['description']?.toString(),
         )).toList();
 
         polls.add(PollModel(

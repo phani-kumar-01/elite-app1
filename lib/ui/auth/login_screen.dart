@@ -63,6 +63,18 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
 
   @override
   Widget build(BuildContext context) {
+    final appState = context.watch<AppState>();
+
+    // Seamless splash loader while verifying and restoring session from device storage
+    if (appState.isRestoringSession) {
+      return const Scaffold(
+        backgroundColor: AppColors.background,
+        body: Center(
+          child: CircularProgressIndicator(color: AppColors.primary),
+        ),
+      );
+    }
+
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
@@ -256,12 +268,17 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                       // Security footer
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           const Icon(Icons.shield_outlined, size: 13, color: AppColors.onSurfaceVariant),
                           const SizedBox(width: 6),
-                          Text(
-                            'Secured by ELITE IT • SASI Institute',
-                            style: GoogleFonts.inter(fontSize: 11, color: AppColors.onSurfaceVariant),
+                          Flexible(
+                            child: Text(
+                              'Secured by ELITE IT • SASI Institute',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.inter(fontSize: 11, color: AppColors.onSurfaceVariant),
+                            ),
                           ),
                         ],
                       ),

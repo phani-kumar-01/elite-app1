@@ -5,6 +5,8 @@ import '../../core/theme/app_theme.dart';
 import '../../core/widgets/app_widgets.dart';
 import '../../state/app_state.dart';
 import 'team_registration_screen.dart';
+import 'project_submission_screen.dart';
+import 'project_showcase_screen.dart';
 
 class EventsScreen extends StatefulWidget {
   const EventsScreen({super.key});
@@ -268,68 +270,69 @@ class _EventsScreenState extends State<EventsScreen> {
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: AppColors.surfaceContainerHigh,
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: Text(
-                            event.category.toUpperCase(),
-                            style: GoogleFonts.inter(
-                              fontSize: 9,
-                              fontWeight: FontWeight.w700,
-                              color: AppColors.onSurfaceVariant,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 6),
-                        if (event.isTeamEvent)
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                            decoration: BoxDecoration(
-                              color: AppColors.secondary.withValues(alpha: 0.12),
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: Text(
-                              'TEAM (${event.minTeamSize}-${event.maxTeamSize})',
-                              style: GoogleFonts.inter(
-                                fontSize: 9,
-                                fontWeight: FontWeight.w800,
-                                color: AppColors.secondary,
-                              ),
-                            ),
-                          ),
-                        const Spacer(),
-                        if (isReg)
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                            decoration: BoxDecoration(
-                              color: AppColors.secondary,
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                const Icon(Icons.check, size: 12, color: Colors.white),
-                                const SizedBox(width: 4),
-                                Text(
-                                  isTeamReg
-                                      ? (isLeader ? 'TEAM LEADER' : 'TEAM MEMBER')
-                                      : 'CONFIRMED',
+                          Wrap(
+                            spacing: 6,
+                            runSpacing: 4,
+                            crossAxisAlignment: WrapCrossAlignment.center,
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                decoration: BoxDecoration(
+                                  color: AppColors.surfaceContainerHigh,
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: Text(
+                                  event.category.toUpperCase(),
                                   style: GoogleFonts.inter(
                                     fontSize: 9,
-                                    fontWeight: FontWeight.w800,
-                                    color: Colors.white,
+                                    fontWeight: FontWeight.w700,
+                                    color: AppColors.onSurfaceVariant,
                                   ),
                                 ),
-                              ],
-                            ),
+                              ),
+                              if (event.isTeamEvent)
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.secondary.withValues(alpha: 0.12),
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  child: Text(
+                                    'TEAM (${event.minTeamSize}-${event.maxTeamSize})',
+                                    style: GoogleFonts.inter(
+                                      fontSize: 9,
+                                      fontWeight: FontWeight.w800,
+                                      color: AppColors.secondary,
+                                    ),
+                                  ),
+                                ),
+                              if (isReg)
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.secondary,
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      const Icon(Icons.check, size: 12, color: Colors.white),
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        isTeamReg
+                                            ? (isLeader ? 'TEAM LEADER' : 'TEAM MEMBER')
+                                            : 'CONFIRMED',
+                                        style: GoogleFonts.inter(
+                                          fontSize: 9,
+                                          fontWeight: FontWeight.w800,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                            ],
                           ),
-                      ],
-                    ),
                     const SizedBox(height: 6),
                     Text(
                       event.title,
@@ -381,11 +384,15 @@ class _EventsScreenState extends State<EventsScreen> {
           const SizedBox(width: 8),
           const Icon(Icons.location_on, size: 14, color: AppColors.onSurfaceVariant),
           const SizedBox(width: 4),
-          Text(
-            event.venue.split('&').first.trim(),
-            style: GoogleFonts.inter(
-              fontSize: 11,
-              color: AppColors.onSurfaceVariant,
+          Flexible(
+            child: Text(
+              event.venue.split('&').first.trim(),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: GoogleFonts.inter(
+                fontSize: 11,
+                color: AppColors.onSurfaceVariant,
+              ),
             ),
           ),
         ],
@@ -402,30 +409,40 @@ class _EventsScreenState extends State<EventsScreen> {
           final isTeamReg = reg?.isTeam == true;
           final isLeader = reg?.isLeader(state.currentUser.rollNumber) == true;
 
-          return Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Icon(Icons.people_alt_outlined, size: 16, color: AppColors.onSurfaceVariant),
-                  const SizedBox(width: 6),
-                  Text(
-                    '${event.seatsLeft} seats left',
-                    style: GoogleFonts.inter(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: event.seatsLeft < 10 ? AppColors.error : AppColors.onSurfaceVariant,
-                    ),
+                  Row(
+                    children: [
+                      const Icon(Icons.people_alt_outlined, size: 15, color: AppColors.onSurfaceVariant),
+                      const SizedBox(width: 6),
+                      Text(
+                        '${event.seatsLeft} seats left',
+                        style: GoogleFonts.inter(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: event.seatsLeft < 10 ? AppColors.error : AppColors.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
-              Row(
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 8,
+                runSpacing: 6,
+                alignment: WrapAlignment.end,
+                crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
                   OutlinedButton(
                     onPressed: () => _showEventDetailsModal(context, event),
                     style: OutlinedButton.styleFrom(
                       side: const BorderSide(color: AppColors.outline),
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                       visualDensity: VisualDensity.compact,
                     ),
@@ -434,7 +451,53 @@ class _EventsScreenState extends State<EventsScreen> {
                       style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.onSurface),
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  if (event.isProjectSubmissionEnabled && isReg) ...[
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => ProjectSubmissionScreen(event: event),
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.code, size: 14),
+                      label: Text(
+                        'Project',
+                        style: GoogleFonts.inter(fontSize: 11.5, fontWeight: FontWeight.w700),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.secondary,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        visualDensity: VisualDensity.compact,
+                      ),
+                    ),
+                  ],
+                  if (event.isVotingEnabled || event.isProjectSubmissionEnabled) ...[
+                    OutlinedButton.icon(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => ProjectShowcaseScreen(event: event),
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.how_to_vote, size: 14),
+                      label: Text(
+                        event.isVotingEnabled ? 'Vote' : 'Showcase',
+                        style: GoogleFonts.inter(fontSize: 11.5, fontWeight: FontWeight.w700, color: AppColors.primary),
+                      ),
+                      style: OutlinedButton.styleFrom(
+                        side: const BorderSide(color: AppColors.primary),
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        visualDensity: VisualDensity.compact,
+                      ),
+                    ),
+                  ],
                   ElevatedButton(
                     onPressed: () {
                       if (isReg) {
@@ -455,7 +518,7 @@ class _EventsScreenState extends State<EventsScreen> {
                           ? AppColors.surfaceContainerHigh
                           : (event.isTeamEvent ? AppColors.secondary : AppColors.primary),
                       foregroundColor: isReg ? AppColors.onSurface : Colors.white,
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                       visualDensity: VisualDensity.compact,
                     ),
@@ -512,41 +575,50 @@ class _EventsScreenState extends State<EventsScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-              Row(
+              Wrap(
+                spacing: 8,
+                runSpacing: 6,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                alignment: WrapAlignment.spaceBetween,
                 children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                    decoration: BoxDecoration(
-                      color: AppColors.secondary,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Text(
-                      event.category.toUpperCase(),
-                      style: GoogleFonts.inter(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w800,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  if (event.isTeamEvent)
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                      decoration: BoxDecoration(
-                        color: AppColors.primary.withValues(alpha: 0.12),
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: Text(
-                        'TEAM EVENT (${event.minTeamSize}-${event.maxTeamSize} STUDENTS)',
-                        style: GoogleFonts.inter(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w800,
-                          color: AppColors.primary,
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                        decoration: BoxDecoration(
+                          color: AppColors.secondary,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(
+                          event.category.toUpperCase(),
+                          style: GoogleFonts.inter(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
-                    ),
-                  const Spacer(),
+                      if (event.isTeamEvent) ...[
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                          decoration: BoxDecoration(
+                            color: AppColors.primary.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            'TEAM (${event.minTeamSize}-${event.maxTeamSize})',
+                            style: GoogleFonts.inter(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w800,
+                              color: AppColors.primary,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
                   Text(
                     '${event.seatsLeft} of ${event.totalSeats} open',
                     style: GoogleFonts.inter(fontSize: 12, color: AppColors.onSurfaceVariant),
@@ -581,20 +653,27 @@ class _EventsScreenState extends State<EventsScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Row(
-                            children: [
-                              const Icon(Icons.groups, color: AppColors.secondary, size: 20),
-                              const SizedBox(width: 8),
-                              Text(
-                                reg.teamName ?? 'Team Registration',
-                                style: GoogleFonts.inter(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w800,
-                                  color: AppColors.onSurface,
+                          Expanded(
+                            child: Row(
+                              children: [
+                                const Icon(Icons.groups, color: AppColors.secondary, size: 20),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    reg.teamName ?? 'Team Registration',
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: GoogleFonts.inter(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w800,
+                                      color: AppColors.onSurface,
+                                    ),
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
+                          const SizedBox(width: 8),
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                             decoration: BoxDecoration(
@@ -661,12 +740,14 @@ class _EventsScreenState extends State<EventsScreen> {
                           children: [
                             const Icon(Icons.verified, size: 14, color: AppColors.success),
                             const SizedBox(width: 6),
-                            Text(
-                              'Individual attendance can be scanned for each member.',
-                              style: GoogleFonts.inter(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.success,
+                            Expanded(
+                              child: Text(
+                                'Individual attendance can be scanned for each member.',
+                                style: GoogleFonts.inter(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.success,
+                                ),
                               ),
                             ),
                           ],
@@ -740,6 +821,61 @@ class _EventsScreenState extends State<EventsScreen> {
 
               // Action Buttons
               if (isReg) ...[
+                if (event.isProjectSubmissionEnabled) ...[
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.pop(ctx);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => ProjectSubmissionScreen(event: event),
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.code, size: 18),
+                      label: Text(
+                        'Submit / Edit Project',
+                        style: GoogleFonts.inter(fontWeight: FontWeight.w700),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.secondary,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                ],
+                if (event.isVotingEnabled || event.isProjectSubmissionEnabled) ...[
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton.icon(
+                      onPressed: () {
+                        Navigator.pop(ctx);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => ProjectShowcaseScreen(event: event),
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.how_to_vote, size: 18),
+                      label: Text(
+                        event.isVotingEnabled ? 'Project Showcase & Vote' : 'View Project Showcase',
+                        style: GoogleFonts.inter(fontWeight: FontWeight.w700, color: AppColors.primary),
+                      ),
+                      style: OutlinedButton.styleFrom(
+                        side: const BorderSide(color: AppColors.primary, width: 1.5),
+                        padding: const EdgeInsets.symmetric(vertical: 13),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                ],
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton.icon(
@@ -775,6 +911,33 @@ class _EventsScreenState extends State<EventsScreen> {
                     ),
                   ),
               ] else ...[
+                if (event.isVotingEnabled || event.isProjectSubmissionEnabled) ...[
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton.icon(
+                      onPressed: () {
+                        Navigator.pop(ctx);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => ProjectShowcaseScreen(event: event),
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.how_to_vote, size: 18),
+                      label: Text(
+                        event.isVotingEnabled ? 'Browse Projects & Vote' : 'Browse Submitted Projects',
+                        style: GoogleFonts.inter(fontWeight: FontWeight.w700, color: AppColors.primary),
+                      ),
+                      style: OutlinedButton.styleFrom(
+                        side: const BorderSide(color: AppColors.primary, width: 1.5),
+                        padding: const EdgeInsets.symmetric(vertical: 13),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                ],
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
@@ -913,7 +1076,15 @@ class _EventsScreenState extends State<EventsScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(label, style: GoogleFonts.inter(fontSize: 11, color: AppColors.onSurfaceVariant)),
-          Text(value, style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.onSurface)),
+          const SizedBox(width: 8),
+          Flexible(
+            child: Text(
+              value,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.onSurface),
+            ),
+          ),
         ],
       ),
     );

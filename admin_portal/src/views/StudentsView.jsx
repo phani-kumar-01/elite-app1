@@ -165,8 +165,8 @@ export default function StudentsView() {
       {/* Stats Summary Banner */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <p style={{ color: 'var(--text-muted)', fontSize: '13px' }}>
-          Displaying <strong style={{ color: '#ffffff' }}>{students.length}</strong> of{' '}
-          <strong style={{ color: '#ffffff' }}>{totalCount}</strong> enrolled student accounts
+          Displaying <strong style={{ color: 'var(--text-main)' }}>{students.length}</strong> of{' '}
+          <strong style={{ color: 'var(--text-main)' }}>{totalCount}</strong> enrolled student accounts
         </p>
         <div style={{ display: 'flex', gap: '8px' }}>
           <button
@@ -402,25 +402,25 @@ export default function StudentsView() {
               </div>
             </div>
 
-            <h3 style={{ fontSize: '18px', fontWeight: '700', color: '#ffffff' }}>
+            <h3 style={{ fontSize: '18px', fontWeight: '700', color: 'var(--text-main)' }}>
               {selectedStudent.name}
             </h3>
-            <p style={{ color: 'var(--cyan)', fontFamily: 'var(--font-mono)', fontWeight: '600', fontSize: '13px' }}>
+            <p style={{ color: 'var(--primary)', fontFamily: 'var(--font-mono)', fontWeight: '600', fontSize: '13px' }}>
               {selectedStudent.roll_no} • {selectedStudent.year_level}
             </p>
             <div
               style={{
                 margin: '16px auto 0',
                 padding: '8px 16px',
-                background: 'rgba(255,255,255,0.03)',
-                borderRadius: '8px',
-                border: '1px solid var(--border-subtle)',
+                background: 'var(--bg-main)',
+                borderRadius: '6px',
+                border: '1px solid var(--border-color)',
                 display: 'inline-block',
                 fontSize: '12px',
                 color: 'var(--text-muted)',
               }}
             >
-              Hardware Turnstile Token: <strong style={{ color: '#ffffff' }}>{selectedStudent.qr_token}</strong>
+              Hardware Turnstile Token: <strong style={{ color: 'var(--text-main)' }}>{selectedStudent.qr_token}</strong>
             </div>
           </div>
         )}

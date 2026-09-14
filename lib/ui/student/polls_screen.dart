@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../core/theme/app_theme.dart';
@@ -110,7 +110,6 @@ class PollsScreen extends StatelessWidget {
   Widget _pollCard(BuildContext context, PollModel poll) {
     final state = context.read<AppState>();
     final hasVoted = poll.userVotedIndex != null;
-    final total = poll.totalVotes;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
@@ -176,7 +175,6 @@ class PollsScreen extends StatelessWidget {
           ...List.generate(poll.options.length, (index) {
             final option = poll.options[index];
             final isSelected = poll.userVotedIndex == index;
-            final percentage = total > 0 ? (option.votes / total) * 100 : 0.0;
 
             return GestureDetector(
               onTap: () => state.voteOnPoll(poll.id, index),
@@ -190,91 +188,92 @@ class PollsScreen extends StatelessWidget {
                   ),
                   color: isSelected ? AppColors.secondaryContainer.withValues(alpha: 0.15) : AppColors.surface,
                 ),
-                clipBehavior: Clip.antiAlias,
-                child: Stack(
-                  children: [
-                    // Percentage Fill Bar
-                    if (hasVoted)
-                      FractionallySizedBox(
-                        widthFactor: percentage / 100,
-                        child: Container(
-                          height: 48,
-                          color: isSelected
-                              ? AppColors.secondary.withValues(alpha: 0.12)
-                              : AppColors.surfaceContainerHigh.withValues(alpha: 0.5),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 18,
+                        height: 18,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: isSelected ? AppColors.secondary : AppColors.outlineVariant,
+                            width: 2,
+                          ),
+                          color: isSelected ? AppColors.secondary : Colors.transparent,
+                        ),
+                        child: isSelected
+                            ? const Icon(Icons.check, size: 12, color: Colors.white)
+                            : null,
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          option.text,
+                          style: GoogleFonts.inter(
+                            fontSize: 13,
+                            fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                            color: AppColors.onSurface,
+                          ),
                         ),
                       ),
-                    // Content Row
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 18,
-                            height: 18,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: isSelected ? AppColors.secondary : AppColors.outlineVariant,
-                                width: 2,
-                              ),
-                              color: isSelected ? AppColors.secondary : Colors.transparent,
-                            ),
-                            child: isSelected
-                                ? const Icon(Icons.check, size: 12, color: Colors.white)
-                                : null,
+                      if (isSelected)
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: AppColors.secondary.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(4),
                           ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: Text(
-                              option.text,
-                              style: GoogleFonts.inter(
-                                fontSize: 13,
-                                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                                color: AppColors.onSurface,
-                              ),
+                          child: Text(
+                            'Your Vote',
+                            style: GoogleFonts.inter(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.secondary,
                             ),
                           ),
-                          if (hasVoted)
-                            Text(
-                              '${percentage.toStringAsFixed(0)}%',
-                              style: GoogleFonts.inter(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w700,
-                                color: isSelected ? AppColors.secondary : AppColors.onSurfaceVariant,
-                              ),
-                            ),
-                        ],
-                      ),
-                    ),
-                  ],
+                        ),
+                    ],
+                  ),
                 ),
               ),
             );
           }),
 
+          const SizedBox(height: 4),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                '$total total verified votes',
-                style: GoogleFonts.inter(fontSize: 11, color: AppColors.onSurfaceVariant),
-              ),
               if (hasVoted)
                 Row(
                   children: [
-                    const Icon(Icons.check_circle, size: 14, color: AppColors.success),
-                    const SizedBox(width: 4),
+                    const Icon(Icons.check_circle, size: 15, color: AppColors.success),
+                    const SizedBox(width: 6),
                     Text(
                       'Vote Recorded',
                       style: GoogleFonts.inter(
-                        fontSize: 11,
+                        fontSize: 12,
                         fontWeight: FontWeight.w600,
                         color: AppColors.success,
                       ),
                     ),
                   ],
+                )
+              else
+                Flexible(
+                  child: Text(
+                    'Tap an option to cast your vote',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.inter(fontSize: 12, color: AppColors.onSurfaceVariant),
+                  ),
                 ),
+              const SizedBox(width: 8),
+              Text(
+                'Student Secret Ballot',
+                style: GoogleFonts.inter(fontSize: 11, color: AppColors.onSurfaceVariant),
+              ),
             ],
           ),
         ],

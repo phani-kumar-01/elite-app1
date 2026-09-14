@@ -8,7 +8,7 @@ import EventsView from './views/EventsView';
 import AttendanceView from './views/AttendanceView';
 import PollsView from './views/PollsView';
 import BroadcastView from './views/BroadcastView';
-import TicketsView from './views/TicketsView';
+import ReportsView from './views/ReportsView';
 import SettingsView from './views/SettingsView';
 import supabaseAdmin from './services/supabase';
 
@@ -17,19 +17,18 @@ export default function App() {
   const [isConnected, setIsConnected] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  // Global telemetry states
+  // Global counts and metrics
   const [metrics, setMetrics] = useState({
     students: 381,
     staff: 24,
     events: 4,
-    attendanceToday: 0,
+    registrations: 0,
     openPolls: 1,
-    openTickets: 0,
   });
   const [events, setEvents] = useState([]);
   const [recentAttendance, setRecentAttendance] = useState([]);
 
-  // Quick modals triggers from dashboard / header
+  // Quick modals triggers from dashboard
   const [isNewEventOpen, setIsNewEventOpen] = useState(false);
   const [isBroadcastOpen, setIsBroadcastOpen] = useState(false);
   const [isCheckInOpen, setIsCheckInOpen] = useState(false);
@@ -37,19 +36,15 @@ export default function App() {
   const fetchGlobalData = async () => {
     setIsRefreshing(true);
     try {
-      // 1. Connection check
       const ping = await supabaseAdmin.testConnection();
       setIsConnected(ping.ok);
 
-      // 2. Metrics
       const m = await supabaseAdmin.getDashboardMetrics();
       setMetrics(m);
 
-      // 3. Events
       const evs = await supabaseAdmin.getEvents();
       setEvents(evs);
 
-      // 4. Attendance
       const att = await supabaseAdmin.getAttendanceLogs({ limit: 10 });
       setRecentAttendance(att);
     } catch (e) {
@@ -62,7 +57,27 @@ export default function App() {
 
   useEffect(() => {
     fetchGlobalData();
+
+    // Real-time synchronization with Supabase events and registrations
+    const unsubRegs = supabaseAdmin.subscribeToRegistrations(() => {
+      fetchGlobalData();
+    });
+    const unsubEvents = supabaseAdmin.subscribeToEvents(() => {
+      fetchGlobalData();
+    });
+
+    return () => {
+      unsubRegs();
+      unsubEvents();
+    };
   }, []);
+
+  const handleLogout = () => {
+    if (window.confirm('Are you sure you want to log out of the administration panel?')) {
+      supabaseAdmin.supabase.auth.signOut().catch(() => {});
+      window.location.reload();
+    }
+  };
 
   return (
     <div className="app-layout">
@@ -71,16 +86,14 @@ export default function App() {
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         metrics={metrics}
+        onLogout={handleLogout}
       />
 
       {/* Main Content Area */}
       <div className="main-wrapper">
         <Header
-          activeTab={activeTab}
-          isConnected={isConnected}
-          onRefresh={fetchGlobalData}
-          isRefreshing={isRefreshing}
-          onOpenSettings={() => setActiveTab('database')}
+          adminName="Administrator"
+          onLogout={handleLogout}
         />
 
         <main style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
@@ -95,7 +108,7 @@ export default function App() {
                 setIsNewEventOpen(true);
               }}
               onOpenBroadcast={() => {
-                setActiveTab('broadcasts');
+                setActiveTab('notifications');
                 setIsBroadcastOpen(true);
               }}
               onOpenCheckIn={() => {
@@ -107,7 +120,7 @@ export default function App() {
 
           {activeTab === 'students' && <StudentsView />}
 
-          {activeTab === 'faculty' && <FacultyView />}
+          {activeTab === 'staff' && <FacultyView />}
 
           {activeTab === 'events' && (
             <EventsView
@@ -125,16 +138,16 @@ export default function App() {
 
           {activeTab === 'polls' && <PollsView />}
 
-          {activeTab === 'broadcasts' && (
+          {activeTab === 'reports' && <ReportsView />}
+
+          {activeTab === 'notifications' && (
             <BroadcastView
               isBroadcastOpen={isBroadcastOpen}
               setIsBroadcastOpen={setIsBroadcastOpen}
             />
           )}
 
-          {activeTab === 'tickets' && <TicketsView />}
-
-          {activeTab === 'database' && (
+          {activeTab === 'settings' && (
             <SettingsView onCredentialsUpdated={fetchGlobalData} />
           )}
         </main>

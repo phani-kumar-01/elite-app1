@@ -12,11 +12,15 @@ class AppRouter {
       initialLocation: '/login',
       refreshListenable: appState,
       redirect: (context, state) {
+        final isRestoring = appState.isRestoringSession;
         final isLoading = appState.isLoadingFromSupabase;
         final isLoggedIn = appState.isLoggedIn;
 
-        // While fetching data, don't redirect — let loading handle itself
-        if (isLoading) return null;
+        // While restoring session from device storage on launch, stay put
+        if (isRestoring) return null;
+
+        // While fetching data for an already logged in user, don't redirect
+        if (isLoading && isLoggedIn) return null;
 
         final loc = state.matchedLocation;
         final isOnLogin = loc == '/login';

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Database, Key, CheckCircle2, AlertCircle, RefreshCw, Server, ShieldCheck } from 'lucide-react';
+import { Key, CheckCircle2, AlertCircle, RefreshCw, Server, ShieldCheck } from 'lucide-react';
 import supabaseAdmin from '../services/supabase';
 
 export default function SettingsView({ onCredentialsUpdated }) {
@@ -29,7 +29,7 @@ export default function SettingsView({ onCredentialsUpdated }) {
   const handleSave = (e) => {
     e.preventDefault();
     supabaseAdmin.updateCredentials(url, key);
-    setSavedMessage('Supabase credentials successfully updated and active!');
+    setSavedMessage('Supabase credentials successfully updated and active.');
     if (onCredentialsUpdated) onCredentialsUpdated();
     setTimeout(() => setSavedMessage(''), 4000);
     handleTestConnection();
@@ -48,17 +48,17 @@ export default function SettingsView({ onCredentialsUpdated }) {
   return (
     <div className="page-container">
       {/* Top Banner */}
-      <div className="glass-card">
+      <div className="card">
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-          <span className="badge badge-indigo">
-            <Server size={12} /> Backend Gateway
+          <span className="badge badge-info">
+            <Server size={12} style={{ marginRight: '4px' }} /> Backend Gateway
           </span>
-          <span className="badge badge-emerald">
-            <ShieldCheck size={12} /> 100% Supabase Powered
+          <span className="badge badge-success">
+            <ShieldCheck size={12} style={{ marginRight: '4px' }} /> 100% Supabase Powered
           </span>
         </div>
-        <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: '20px', fontWeight: '800' }}>
-          Supabase PostgreSQL Connection & Security Keys
+        <h2 style={{ fontSize: '18px', fontWeight: '700', color: 'var(--text-main)' }}>
+          Supabase PostgreSQL Connection & Settings
         </h2>
         <p style={{ color: 'var(--text-muted)', fontSize: '13px', marginTop: '4px' }}>
           Manage your live Supabase endpoint and switch between Anon Public key and Service Role key.
@@ -66,41 +66,41 @@ export default function SettingsView({ onCredentialsUpdated }) {
       </div>
 
       {/* Connection Status Card */}
-      <div className="glass-card">
+      <div className="card">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-          <h3 style={{ fontFamily: 'var(--font-heading)', fontSize: '16px', fontWeight: '700' }}>
-            Live Supabase Diagnostics
+          <h3 style={{ fontSize: '15px', fontWeight: '600', color: 'var(--text-main)' }}>
+            Database Diagnostics
           </h3>
           <button
             onClick={handleTestConnection}
-            className="btn btn-secondary"
+            className="btn btn-secondary btn-sm"
             disabled={isTesting}
-            style={{ padding: '6px 12px', fontSize: '12px' }}
           >
-            <RefreshCw size={13} className={isTesting ? 'animate-spin' : ''} />
-            <span>Run Health Check</span>
+            <RefreshCw size={13} />
+            <span>{isTesting ? 'Testing...' : 'Test Connection'}</span>
           </button>
         </div>
 
         {testResult && (
           <div
             style={{
-              padding: '12px 16px',
-              borderRadius: '8px',
-              background: testResult.ok ? 'rgba(16, 185, 129, 0.1)' : 'rgba(244, 63, 94, 0.1)',
-              border: `1px solid ${testResult.ok ? 'rgba(16, 185, 129, 0.3)' : 'rgba(244, 63, 94, 0.3)'}`,
+              padding: '12px 14px',
+              borderRadius: '6px',
+              background: testResult.ok ? '#f0fdf4' : '#fef2f2',
+              border: `1px solid ${testResult.ok ? '#bbf7d0' : '#fecaca'}`,
               display: 'flex',
               alignItems: 'center',
               gap: '10px',
+              marginBottom: '16px',
             }}
           >
             {testResult.ok ? (
-              <CheckCircle2 size={20} color="var(--emerald)" />
+              <CheckCircle2 size={18} color="#16a34a" />
             ) : (
-              <AlertCircle size={20} color="var(--rose)" />
+              <AlertCircle size={18} color="#dc2626" />
             )}
             <div>
-              <div style={{ fontWeight: '700', color: testResult.ok ? '#34d399' : '#fb7185' }}>
+              <div style={{ fontWeight: '600', fontSize: '13px', color: testResult.ok ? '#15803d' : '#b91c1c' }}>
                 {testResult.ok ? 'Database Connected & Operational' : 'Connection Failure'}
               </div>
               <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
@@ -112,38 +112,37 @@ export default function SettingsView({ onCredentialsUpdated }) {
           </div>
         )}
 
-        <div style={{ marginTop: '16px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '10px' }}>
           {[
             { name: 'students', label: 'Student Enrolment (381)' },
             { name: 'staff', label: 'Faculty Coordinators' },
             { name: 'events', label: 'Events & Lineup' },
-            { name: 'event_attendance', label: 'Turnstile Scans' },
+            { name: 'event_attendance', label: 'Attendance Scans' },
             { name: 'polls', label: 'Ballots & Polls' },
-            { name: 'notifications', label: 'System Broadcasts' },
-            { name: 'student_queries', label: 'Helpdesk Tickets' },
+            { name: 'notifications', label: 'System Notifications' },
           ].map((t) => (
             <div
               key={t.name}
               style={{
-                padding: '10px 12px',
-                background: 'rgba(255, 255, 255, 0.02)',
-                borderRadius: '8px',
-                border: '1px solid var(--border-subtle)',
+                padding: '8px 12px',
+                background: 'var(--bg-main)',
+                borderRadius: '6px',
+                border: '1px solid var(--border-color)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
               }}
             >
               <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{t.label}</span>
-              <span className="badge badge-emerald">Ready</span>
+              <span className="badge badge-success">Ready</span>
             </div>
           ))}
         </div>
       </div>
 
       {/* Credential Form */}
-      <div className="glass-card">
-        <h3 style={{ fontFamily: 'var(--font-heading)', fontSize: '16px', fontWeight: '700', marginBottom: '14px' }}>
+      <div className="card">
+        <h3 style={{ fontSize: '15px', fontWeight: '600', color: 'var(--text-main)', marginBottom: '14px' }}>
           API Endpoint & Security Credentials
         </h3>
 
@@ -151,10 +150,10 @@ export default function SettingsView({ onCredentialsUpdated }) {
           <div
             style={{
               padding: '10px 14px',
-              borderRadius: '8px',
-              background: 'rgba(16, 185, 129, 0.15)',
-              border: '1px solid rgba(16, 185, 129, 0.3)',
-              color: '#34d399',
+              borderRadius: '6px',
+              background: '#f0fdf4',
+              border: '1px solid #bbf7d0',
+              color: '#15803d',
               fontSize: '13px',
               fontWeight: '600',
               marginBottom: '14px',
@@ -185,15 +184,15 @@ export default function SettingsView({ onCredentialsUpdated }) {
               rows={3}
               required
             />
-            <span style={{ fontSize: '11px', color: 'var(--text-dim)' }}>
-              * You can paste a <strong>service_role</strong> secret key here to bypass Row Level Security (RLS) for complete admin overrides.
+            <span style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '4px' }}>
+              Paste a <strong>service_role</strong> secret key to bypass Row Level Security (RLS) for complete admin overrides.
             </span>
           </div>
 
           <div style={{ display: 'flex', gap: '10px', marginTop: '6px' }}>
             <button type="submit" className="btn btn-primary">
               <Key size={14} />
-              <span>Apply & Activate Credentials</span>
+              <span>Apply & Save Credentials</span>
             </button>
             <button type="button" onClick={handleReset} className="btn btn-secondary">
               Reset to Project Defaults

@@ -73,6 +73,12 @@ class EventModel {
   final bool isTeamEvent;
   final int minTeamSize;
   final int maxTeamSize;
+  final bool isProjectSubmissionEnabled;
+  final DateTime? projectSubmissionDeadline;
+  final bool isVotingEnabled;
+  final DateTime? votingStart;
+  final DateTime? votingEnd;
+  final List<String> votingEligibleRoles;
 
   EventModel({
     required this.id,
@@ -92,6 +98,12 @@ class EventModel {
     this.isTeamEvent = false,
     this.minTeamSize = 1,
     this.maxTeamSize = 1,
+    this.isProjectSubmissionEnabled = false,
+    this.projectSubmissionDeadline,
+    this.isVotingEnabled = false,
+    this.votingStart,
+    this.votingEnd,
+    this.votingEligibleRoles = const ['STUDENT', 'STAFF'],
   });
 }
 
@@ -222,11 +234,15 @@ class PollOption {
   final String id;
   final String text;
   int votes;
+  final String? imageUrl;
+  final String? description;
 
   PollOption({
     required this.id,
     required this.text,
     required this.votes,
+    this.imageUrl,
+    this.description,
   });
 }
 
@@ -289,3 +305,128 @@ class AppNotification {
     this.isRead = false,
   });
 }
+
+class ProjectSubmissionModel {
+  final String id;
+  final String eventId;
+  final String registrationId;
+  final String teamName;
+  final String leaderId;
+  final String leaderName;
+  final String projectName;
+  final String shortDescription;
+  final String detailedDescription;
+  final List<String> technologies;
+  final String? repoUrl;
+  final String? demoUrl;
+  final String? documentationUrl;
+  final String? presentationUrl;
+  final String? imageUrl;
+  final String status; // PENDING, PUBLISHED, REJECTED
+  final int voteCount;
+  final String createdAt;
+  final String updatedAt;
+
+  ProjectSubmissionModel({
+    required this.id,
+    required this.eventId,
+    required this.registrationId,
+    required this.teamName,
+    required this.leaderId,
+    required this.leaderName,
+    required this.projectName,
+    this.shortDescription = '',
+    this.detailedDescription = '',
+    this.technologies = const [],
+    this.repoUrl,
+    this.demoUrl,
+    this.documentationUrl,
+    this.presentationUrl,
+    this.imageUrl,
+    this.status = 'PENDING',
+    this.voteCount = 0,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+
+  bool get isPublished => status.toUpperCase() == 'PUBLISHED';
+
+  factory ProjectSubmissionModel.fromJson(Map<String, dynamic> json) {
+    List<String> techList = [];
+    if (json['technologies'] is List) {
+      techList = (json['technologies'] as List).map((e) => e.toString()).toList();
+    }
+
+    return ProjectSubmissionModel(
+      id: json['id']?.toString() ?? '',
+      eventId: json['event_id']?.toString() ?? '',
+      registrationId: json['registration_id']?.toString() ?? '',
+      teamName: json['team_name']?.toString() ?? '',
+      leaderId: json['leader_id']?.toString() ?? '',
+      leaderName: json['leader_name']?.toString() ?? '',
+      projectName: json['project_name']?.toString() ?? '',
+      shortDescription: json['short_description']?.toString() ?? '',
+      detailedDescription: json['detailed_description']?.toString() ?? '',
+      technologies: techList,
+      repoUrl: json['repo_url']?.toString(),
+      demoUrl: json['demo_url']?.toString(),
+      documentationUrl: json['documentation_url']?.toString(),
+      presentationUrl: json['presentation_url']?.toString(),
+      imageUrl: json['image_url']?.toString(),
+      status: json['status']?.toString() ?? 'PENDING',
+      voteCount: (json['vote_count'] as num?)?.toInt() ?? 0,
+      createdAt: json['created_at']?.toString() ?? '',
+      updatedAt: json['updated_at']?.toString() ?? '',
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'event_id': eventId,
+    'registration_id': registrationId,
+    'team_name': teamName,
+    'leader_id': leaderId,
+    'leader_name': leaderName,
+    'project_name': projectName,
+    'short_description': shortDescription,
+    'detailed_description': detailedDescription,
+    'technologies': technologies,
+    'repo_url': repoUrl,
+    'demo_url': demoUrl,
+    'documentation_url': documentationUrl,
+    'presentation_url': presentationUrl,
+    'image_url': imageUrl,
+    'status': status,
+    'vote_count': voteCount,
+    'created_at': createdAt,
+    'updated_at': updatedAt,
+  };
+}
+
+class ProjectVoteModel {
+  final String id;
+  final String eventId;
+  final String projectId;
+  final String voterId;
+  final String voterRole;
+  final String votedAt;
+
+  ProjectVoteModel({
+    required this.id,
+    required this.eventId,
+    required this.projectId,
+    required this.voterId,
+    required this.voterRole,
+    required this.votedAt,
+  });
+
+  factory ProjectVoteModel.fromJson(Map<String, dynamic> json) => ProjectVoteModel(
+    id: json['id']?.toString() ?? '',
+    eventId: json['event_id']?.toString() ?? '',
+    projectId: json['project_id']?.toString() ?? '',
+    voterId: json['voter_id']?.toString() ?? '',
+    voterRole: json['voter_role']?.toString() ?? 'STUDENT',
+    votedAt: json['voted_at']?.toString() ?? '',
+  );
+}
+

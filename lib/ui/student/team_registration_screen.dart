@@ -268,12 +268,16 @@ class _TeamRegistrationScreenState extends State<TeamRegistrationScreen> {
                           children: [
                             Row(
                               children: [
-                                Text(
-                                  leader.studentName,
-                                  style: GoogleFonts.inter(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w700,
-                                    color: AppColors.onSurface,
+                                Flexible(
+                                  child: Text(
+                                    leader.studentName,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: GoogleFonts.inter(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w700,
+                                      color: AppColors.onSurface,
+                                    ),
                                   ),
                                 ),
                                 const SizedBox(width: 6),
@@ -297,6 +301,8 @@ class _TeamRegistrationScreenState extends State<TeamRegistrationScreen> {
                             const SizedBox(height: 2),
                             Text(
                               '${leader.studentRoll} • ${leader.studentDept} • ${leader.studentEmail}',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                               style: GoogleFonts.inter(
                                 fontSize: 11,
                                 color: AppColors.onSurfaceVariant,
@@ -387,6 +393,8 @@ class _TeamRegistrationScreenState extends State<TeamRegistrationScreen> {
                                 const SizedBox(height: 1),
                                 Text(
                                   '${m.studentRoll} • ${m.studentDept} • ${m.studentEmail}',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                   style: GoogleFonts.inter(
                                     fontSize: 11,
                                     color: AppColors.onSurfaceVariant,
@@ -415,12 +423,14 @@ class _TeamRegistrationScreenState extends State<TeamRegistrationScreen> {
                       children: [
                         const Icon(Icons.info_outline, size: 14, color: AppColors.secondary),
                         const SizedBox(width: 6),
-                        Text(
-                          'Add at least ${event.minTeamSize - _members.length} more member(s) to meet requirements.',
-                          style: GoogleFonts.inter(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w500,
-                            color: AppColors.secondary,
+                        Expanded(
+                          child: Text(
+                            'Add at least ${event.minTeamSize - _members.length} more member(s) to meet requirements.',
+                            style: GoogleFonts.inter(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w500,
+                              color: AppColors.secondary,
+                            ),
                           ),
                         ),
                       ],

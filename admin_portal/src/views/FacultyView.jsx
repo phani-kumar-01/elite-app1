@@ -85,50 +85,51 @@ export default function FacultyView() {
       </div>
 
       {/* Faculty Cards Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '18px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '16px' }}>
         {filtered.map((member) => (
-          <div key={member.employee_id} className="glass-card" style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+          <div key={member.employee_id} className="card" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               <div
                 style={{
-                  width: '46px',
-                  height: '46px',
-                  borderRadius: '12px',
-                  background: 'linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%)',
+                  width: '40px',
+                  height: '40px',
+                  borderRadius: '6px',
+                  background: 'var(--primary-subtle)',
+                  border: '1px solid var(--border-color)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   fontWeight: '700',
-                  fontSize: '16px',
-                  color: '#ffffff',
+                  fontSize: '15px',
+                  color: 'var(--primary)',
                 }}
               >
                 {member.name ? member.name.charAt(0) : 'F'}
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
-                <h4 style={{ fontWeight: '700', fontSize: '15px', color: '#ffffff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                <h4 style={{ fontWeight: '600', fontSize: '14px', color: 'var(--text-main)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                   {member.name}
                 </h4>
-                <div style={{ fontSize: '12px', color: 'var(--cyan)', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <div style={{ fontSize: '12px', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '4px' }}>
                   <Briefcase size={12} /> {member.designation || 'Faculty Coordinator'}
                 </div>
               </div>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', borderTop: '1px solid var(--border-subtle)', paddingTop: '12px', fontSize: '12px', color: 'var(--text-muted)' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', borderTop: '1px solid var(--border-color)', paddingTop: '10px', fontSize: '12px', color: 'var(--text-muted)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span className="badge badge-indigo">{member.employee_id}</span>
+                <span className="badge badge-info">{member.employee_id}</span>
                 <span>{member.department || 'Information Technology'}</span>
               </div>
               {member.email && (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <Mail size={13} style={{ color: 'var(--text-dim)' }} />
+                  <Mail size={13} style={{ color: 'var(--text-muted)' }} />
                   <span>{member.email}</span>
                 </div>
               )}
               {member.cabin && (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <MapPin size={13} style={{ color: 'var(--text-dim)' }} />
+                  <MapPin size={13} style={{ color: 'var(--text-muted)' }} />
                   <span>{member.cabin}</span>
                 </div>
               )}
