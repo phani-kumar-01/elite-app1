@@ -37,6 +37,19 @@ class UserModel {
     this.attendancePercent = 88,
   });
 
+  factory UserModel.empty() => UserModel(
+        id: '',
+        name: '',
+        email: '',
+        rollNumber: '',
+        role: UserRole.student,
+        department: 'Information Technology',
+        academicDetails: '',
+        status: 'INACTIVE',
+        cgpa: 0,
+        attendancePercent: 0,
+      );
+
   bool get isStudent => role == UserRole.student;
   bool get isStaff => role == UserRole.staff;
   bool get isAdmin => role == UserRole.admin;

@@ -7,7 +7,7 @@ import '../core/services/supabase_service.dart';
 class AppState extends ChangeNotifier {
   final SupabaseService _supabaseService;
 
-  UserModel _currentUser = MockRepository.studentUser;
+  UserModel? _currentUser;
   List<EventModel> _events = MockRepository.getInitialEvents();
   final List<SubjectAttendance> _subjectAttendance = MockRepository.getSubjectAttendance();
   final List<AttendanceLog> _attendanceLogs = MockRepository.getAttendanceLogs();
@@ -28,20 +28,36 @@ class AppState extends ChangeNotifier {
   AppState([SupabaseService? supabaseService])
       : _supabaseService = supabaseService ?? SupabaseService() {
     _leaderboard = _supabaseService.getLiveLeaderboard();
-    // Sync only if a user is already logged in (session persisted)
     _restoreSession();
   }
 
-  void _restoreSession() {
-    // No Supabase OAuth session to restore — login is credential-based.
-    // We rely on in-memory state only.
+  Future<void> _restoreSession() async {
+    final client = SupabaseService.client;
+    if (client == null) return;
+    try {
+      final session = client.auth.currentSession;
+      if (session != null && session.user.email != null) {
+        _isLoadingFromSupabase = true;
+        notifyListeners();
+        final profile = await _supabaseService.fetchUserProfile(session.user.email!);
+        if (profile != null) {
+          _currentUser = profile;
+          await syncFromSupabase();
+        }
+      }
+    } catch (e) {
+      debugPrint('AppState._restoreSession error: $e');
+    } finally {
+      _isLoadingFromSupabase = false;
+      notifyListeners();
+    }
   }
 
-  UserModel get currentUser => _currentUser;
-  bool get isLoggedIn => _currentUser.id != 'mock_student';
-  bool get isStudent => _currentUser.isStudent;
-  bool get isStaff => _currentUser.isStaff;
-  bool get isAdmin => _currentUser.isAdmin;
+  UserModel get currentUser => _currentUser ?? UserModel.empty();
+  bool get isLoggedIn => _currentUser != null && _currentUser!.id.isNotEmpty;
+  bool get isStudent => _currentUser?.isStudent == true;
+  bool get isStaff => _currentUser?.isStaff == true;
+  bool get isAdmin => _currentUser?.isAdmin == true;
 
   List<EventModel> get events => _events;
   List<EventRegistrationModel> get registrations => _registrations;
@@ -70,7 +86,7 @@ class AppState extends ChangeNotifier {
 
   /// Check if the currently logged-in student (or specified student) is registered for an event
   EventRegistrationModel? getRegistrationForEvent(String eventId, [String? studentRollOrEmail]) {
-    final target = (studentRollOrEmail ?? _currentUser.rollNumber).trim().toLowerCase();
+    final target = (studentRollOrEmail ?? currentUser.rollNumber).trim().toLowerCase();
     for (final reg in _registrations) {
       if (reg.eventId == eventId && reg.containsStudent(target)) {
         return reg;
@@ -126,11 +142,16 @@ class AppState extends ChangeNotifier {
     }
   }
 
-  void logout() {
-    _currentUser = MockRepository.studentUser;
-    _events = MockRepository.getInitialEvents();
-    _polls = MockRepository.getInitialPolls();
-    _notifications = MockRepository.getInitialNotifications();
+  Future<void> logout() async {
+    try {
+      await SupabaseService.client?.auth.signOut();
+    } catch (_) {}
+    _currentUser = null;
+    _events = [];
+    _polls = [];
+    _notifications = [];
+    _registrations.clear();
+    _attendanceLogs.clear();
     notifyListeners();
   }
 
@@ -138,20 +159,22 @@ class AppState extends ChangeNotifier {
 
   Future<void> syncFromSupabase() async {
     if (!_supabaseService.isInitialized) return;
+    final user = _currentUser;
+    if (user == null || user.id.isEmpty) return;
 
     _isLoadingFromSupabase = true;
     notifyListeners();
 
     try {
-      // 1. Fetch live user profile (use email as primary key for reliable lookup)
-      final liveUser = await _supabaseService.fetchUserProfile(_currentUser.email);
+      // 1. Fetch live user profile
+      final liveUser = await _supabaseService.fetchUserProfile(user.email);
       if (liveUser != null) {
         _currentUser = liveUser;
       }
 
       // 2. Fetch live attendance logs
       final liveLogs = await _supabaseService.fetchAttendanceLogs(
-        _currentUser.isStudent ? _currentUser.rollNumber : null,
+        user.isStudent ? user.rollNumber : null,
       );
       if (liveLogs.isNotEmpty) {
         _attendanceLogs.clear();
@@ -161,7 +184,7 @@ class AppState extends ChangeNotifier {
       // 3. Fetch live events
       final supaEvents = await _supabaseService.fetchEvents();
       if (supaEvents.isNotEmpty) {
-        final registeredIds = await _supabaseService.fetchUserRegisteredEventIds(_currentUser.id);
+        final registeredIds = await _supabaseService.fetchUserRegisteredEventIds(currentUser.id);
         for (var ev in supaEvents) {
           if (registeredIds.contains(ev.id)) {
             ev.isRegistered = true;
@@ -171,13 +194,13 @@ class AppState extends ChangeNotifier {
       }
 
       // 4. Fetch live polls
-      final supaPolls = await _supabaseService.fetchPolls(userId: _currentUser.id);
+      final supaPolls = await _supabaseService.fetchPolls(userId: currentUser.id);
       if (supaPolls.isNotEmpty) {
         _polls = supaPolls;
       }
 
       // 5. Fetch live notifications
-      final supaNotifs = await _supabaseService.fetchNotifications(userId: _currentUser.id);
+      final supaNotifs = await _supabaseService.fetchNotifications(userId: currentUser.id);
       if (supaNotifs.isNotEmpty) {
         _notifications = supaNotifs;
       }
@@ -186,7 +209,7 @@ class AppState extends ChangeNotifier {
       final students = await _supabaseService.fetchStudentsList();
       if (students.isNotEmpty) _studentsRoster = students;
 
-      if (_currentUser.isStaff || _currentUser.isAdmin) {
+      if (currentUser.isStaff || currentUser.isAdmin) {
         final staff = await _supabaseService.fetchStaffList();
         if (staff.isNotEmpty) _staffRoster = staff;
       }
@@ -223,22 +246,22 @@ class AppState extends ChangeNotifier {
     }
 
     final reg = EventRegistrationModel(
-      id: 'reg_${eventId}_${_currentUser.id}',
+      id: 'reg_${eventId}_${currentUser.id}',
       eventId: eventId,
       isTeam: false,
-      studentId: _currentUser.id,
-      studentRoll: _currentUser.rollNumber,
-      studentName: _currentUser.name,
-      studentEmail: _currentUser.email,
-      studentYear: _currentUser.yearLevel,
+      studentId: currentUser.id,
+      studentRoll: currentUser.rollNumber,
+      studentName: currentUser.name,
+      studentEmail: currentUser.email,
+      studentYear: currentUser.yearLevel,
       members: [
         TeamMemberInfo(
-          studentId: _currentUser.id,
-          studentRoll: _currentUser.rollNumber,
-          studentName: _currentUser.name,
-          studentEmail: _currentUser.email,
-          studentDept: _currentUser.department,
-          studentYear: _currentUser.yearLevel,
+          studentId: currentUser.id,
+          studentRoll: currentUser.rollNumber,
+          studentName: currentUser.name,
+          studentEmail: currentUser.email,
+          studentDept: currentUser.department,
+          studentYear: currentUser.yearLevel,
           isLeader: true,
         ),
       ],
@@ -251,7 +274,7 @@ class AppState extends ChangeNotifier {
     notifyListeners();
 
     if (_supabaseService.isInitialized) {
-      await _supabaseService.registerEvent(eventId: eventId, user: _currentUser);
+      await _supabaseService.registerEvent(eventId: eventId, user: currentUser);
     }
     return {'success': true, 'message': 'Registration confirmed for ${target.title}!'};
   }
@@ -303,11 +326,11 @@ class AppState extends ChangeNotifier {
       eventId: eventId,
       isTeam: true,
       teamName: cleanTeamName,
-      studentId: _currentUser.id,
-      studentRoll: _currentUser.rollNumber,
-      studentName: _currentUser.name,
-      studentEmail: _currentUser.email,
-      studentYear: _currentUser.yearLevel,
+      studentId: currentUser.id,
+      studentRoll: currentUser.rollNumber,
+      studentName: currentUser.name,
+      studentEmail: currentUser.email,
+      studentYear: currentUser.yearLevel,
       members: members,
       registeredAt: DateTime.now().toIso8601String(),
     );
@@ -321,7 +344,7 @@ class AppState extends ChangeNotifier {
       await _supabaseService.registerTeam(
         eventId: eventId,
         teamName: cleanTeamName,
-        leader: _currentUser,
+        leader: currentUser,
         members: members,
       );
     }
@@ -333,7 +356,7 @@ class AppState extends ChangeNotifier {
   }
 
   Future<void> cancelEventRegistration(String eventId) async {
-    _registrations.removeWhere((r) => r.eventId == eventId && r.containsStudent(_currentUser.rollNumber));
+    _registrations.removeWhere((r) => r.eventId == eventId && r.containsStudent(currentUser.rollNumber));
     final index = _events.indexWhere((e) => e.id == eventId);
     if (index != -1) {
       _events[index].isRegistered = false;
@@ -341,7 +364,7 @@ class AppState extends ChangeNotifier {
     }
     notifyListeners();
     if (_supabaseService.isInitialized) {
-      await _supabaseService.cancelRegistration(eventId: eventId, userId: _currentUser.id);
+      await _supabaseService.cancelRegistration(eventId: eventId, userId: currentUser.id);
     }
   }
 
@@ -412,7 +435,7 @@ class AppState extends ChangeNotifier {
       qrOrRoll: qrOrRoll,
       eventId: eventId,
       session: session,
-      scannedBy: _currentUser.name,
+      scannedBy: currentUser.name,
     );
 
     if (result['success'] == true) {
@@ -437,7 +460,7 @@ class AppState extends ChangeNotifier {
 
   Future<bool> voteOnPoll(String pollId, int optionIndex) async {
     // Restriction: Staff cannot vote in polls!
-    if (_currentUser.isStaff) {
+    if (currentUser.isStaff) {
       debugPrint('Staff accounts are prohibited from voting in student polls.');
       return false;
     }
@@ -458,7 +481,7 @@ class AppState extends ChangeNotifier {
       await _supabaseService.castVote(
         pollId: pollId,
         optionId: opt.id,
-        userId: _currentUser.id,
+        userId: currentUser.id,
       );
     }
     return true;
@@ -507,11 +530,11 @@ class AppState extends ChangeNotifier {
     if (index != -1) {
       _notifications[index].isRead = true;
       notifyListeners();
-      if (_supabaseService.isInitialized) {
+      if (_supabaseService.isInitialized && currentUser.id.isNotEmpty) {
         await SupabaseService.client?.from('notification_reads').upsert({
-          'id': '${id}_${_currentUser.id}',
+          'id': '${id}_${currentUser.id}',
           'notification_id': id,
-          'user_id': _currentUser.id,
+          'user_id': currentUser.id,
           'read_at': DateTime.now().toIso8601String(),
         });
       }
@@ -522,32 +545,6 @@ class AppState extends ChangeNotifier {
     for (final notif in _notifications) {
       notif.isRead = true;
     }
-    notifyListeners();
-  }
-
-  void switchRole(UserRole role) {
-    _currentUser = UserModel(
-      id: 'demo_${role.name}',
-      name: role == UserRole.student
-          ? 'Phani Kumar'
-          : role == UserRole.staff
-              ? 'Dr. K. Srinivas (Faculty)'
-              : 'SysAdmin IT Dept',
-      email: role == UserRole.student
-          ? '24K61A1259@sasi.ac.in'
-          : role == UserRole.staff
-              ? 'hod_it@sasi.ac.in'
-              : 'admin@sasi.ac.in',
-      rollNumber: role == UserRole.student ? '24K61A1259' : (role == UserRole.staff ? 'FAC104' : 'HOD-IT'),
-      role: role,
-      department: 'Information Technology',
-      academicDetails: role == UserRole.student
-          ? 'B.Tech IT • 3rd Year • Section B'
-          : (role == UserRole.staff ? 'Associate Professor & Lab In-charge' : 'Lead Administrator'),
-      yearLevel: role == UserRole.student ? '3rd Year' : 'Faculty',
-      section: 'B',
-      labPassId: 'ELITE_QR_${role.name.toUpperCase()}',
-    );
     notifyListeners();
   }
 

@@ -18,15 +18,29 @@ class AppRouter {
         // While fetching data, don't redirect — let loading handle itself
         if (isLoading) return null;
 
-        final isOnLogin = state.matchedLocation == '/login';
+        final loc = state.matchedLocation;
+        final isOnLogin = loc == '/login';
 
-        // Not logged in → always go to login
-        if (!isLoggedIn && !isOnLogin) return '/login';
+        // 1. Not logged in → must stay on login
+        if (!isLoggedIn) {
+          return isOnLogin ? null : '/login';
+        }
 
-        // Already logged in → go to appropriate dashboard
-        if (isLoggedIn && isOnLogin) {
+        // 2. Already logged in and on login page → redirect to their authorized dashboard
+        if (isOnLogin) {
           if (appState.isAdmin) return '/admin';
           if (appState.isStaff) return '/staff';
+          return '/student';
+        }
+
+        // 3. Strict Server-Driven Role Guards:
+        // Admin portal protection: Only admin role can access /admin
+        if (loc.startsWith('/admin') && !appState.isAdmin) {
+          return appState.isStaff ? '/staff' : '/student';
+        }
+
+        // Staff portal protection: Students cannot access /staff
+        if (loc.startsWith('/staff') && !appState.isStaff && !appState.isAdmin) {
           return '/student';
         }
 

@@ -132,41 +132,46 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
           },
         ),
 
-        // Role Switcher Pill
-        GestureDetector(
-          onTap: () => _showRoleSwitchSheet(context),
-          child: Container(
-            margin: const EdgeInsets.symmetric(vertical: 14),
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              color: AppColors.surfaceContainerLow,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: AppColors.outline),
+        // Institutional Role Badge (Read-Only)
+        Container(
+          margin: const EdgeInsets.symmetric(vertical: 14),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+          decoration: BoxDecoration(
+            color: user.role == UserRole.admin
+                ? AppColors.primary.withValues(alpha: 0.1)
+                : (user.role == UserRole.staff
+                    ? AppColors.primaryContainer.withValues(alpha: 0.15)
+                    : AppColors.surfaceContainerLow),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: user.role == UserRole.admin
+                  ? AppColors.primary.withValues(alpha: 0.3)
+                  : AppColors.outline,
             ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  user.role == UserRole.student
-                      ? Icons.school
-                      : user.role == UserRole.staff
-                          ? Icons.badge
-                          : Icons.admin_panel_settings,
-                  size: 14,
-                  color: AppColors.secondary,
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                user.role == UserRole.student
+                    ? Icons.school
+                    : user.role == UserRole.staff
+                        ? Icons.badge
+                        : Icons.admin_panel_settings,
+                size: 14,
+                color: user.role == UserRole.admin ? AppColors.primary : AppColors.secondary,
+              ),
+              const SizedBox(width: 5),
+              Text(
+                user.role.name.toUpperCase(),
+                style: GoogleFonts.inter(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.5,
+                  color: user.role == UserRole.admin ? AppColors.primary : AppColors.onSurface,
                 ),
-                const SizedBox(width: 4),
-                Text(
-                  user.role.name.toUpperCase(),
-                  style: GoogleFonts.inter(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.onSurface,
-                  ),
-                ),
-                const Icon(Icons.arrow_drop_down, size: 16, color: AppColors.onSurfaceVariant),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
         const SizedBox(width: 4),
@@ -203,106 +208,6 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
         ),
         const SizedBox(width: 4),
       ],
-    );
-  }
-
-  void _showRoleSwitchSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      builder: (ctx) => Container(
-        padding: const EdgeInsets.all(24),
-        decoration: const BoxDecoration(
-          color: AppColors.surface,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                const Icon(Icons.swap_horiz, color: AppColors.secondary),
-                const SizedBox(width: 8),
-                Text(
-                  'Switch Portal Persona',
-                  style: GoogleFonts.inter(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.onSurface,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 6),
-            Text(
-              'Select a persona to test the respective user experience:',
-              style: GoogleFonts.inter(fontSize: 13, color: AppColors.onSurfaceVariant),
-            ),
-            const SizedBox(height: 16),
-            _roleTile(
-              context,
-              title: 'Student Portal',
-              subtitle: 'Alex Vance (B.Tech IT • Sem 6) • Lab Pass, Attendance, Events',
-              role: UserRole.student,
-              icon: Icons.school,
-            ),
-            _roleTile(
-              context,
-              title: 'Faculty / Staff Portal',
-              subtitle: 'Dr. Sarah Jenkins • Attendance Scanner, Classes, Approvals',
-              role: UserRole.staff,
-              icon: Icons.badge,
-            ),
-            _roleTile(
-              context,
-              title: 'Admin Portal',
-              subtitle: 'Prof. Robert Sterling • Department Analytics, Students, Audit Logs',
-              role: UserRole.admin,
-              icon: Icons.admin_panel_settings,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _roleTile(
-    BuildContext context, {
-    required String title,
-    required String subtitle,
-    required UserRole role,
-    required IconData icon,
-  }) {
-    final state = context.read<AppState>();
-    final isSelected = state.currentUser.role == role;
-
-    return ListTile(
-      onTap: () {
-        state.switchRole(role);
-        Navigator.pop(context);
-      },
-      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-      leading: Container(
-        padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: isSelected ? AppColors.secondary : AppColors.surfaceContainerLow,
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Icon(icon, color: isSelected ? Colors.white : AppColors.primary, size: 20),
-      ),
-      title: Text(
-        title,
-        style: GoogleFonts.inter(
-          fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
-          color: AppColors.onSurface,
-        ),
-      ),
-      subtitle: Text(
-        subtitle,
-        style: GoogleFonts.inter(fontSize: 11, color: AppColors.onSurfaceVariant),
-      ),
-      trailing: isSelected ? const Icon(Icons.check_circle, color: AppColors.secondary) : null,
     );
   }
 }

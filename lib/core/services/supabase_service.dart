@@ -61,103 +61,79 @@ class SupabaseService extends ChangeNotifier {
     if (c == null) return null;
 
     final u = username.trim().toLowerCase();
-    final p = password.trim().toLowerCase();
+    final p = password.trim();
 
     try {
+      String? matchedUserId;
+
       // 1. Check students table (roll_no = username, password_hash = password)
       final studentRes = await c
           .from('students')
-          .select()
+          .select('user_id')
           .eq('roll_no', u.toUpperCase())
-          .eq('password_hash', p)
+          .eq('password_hash', p.toLowerCase())
           .maybeSingle();
 
       if (studentRes != null) {
-        final roll = studentRes['roll_no']?.toString() ?? u;
-        final name = studentRes['name']?.toString() ?? 'IT Student';
-        final yr = studentRes['year_level']?.toString() ?? '3rd Year';
-        final sec = studentRes['section']?.toString() ?? 'A';
-        final qr = studentRes['qr_token']?.toString() ?? 'ELITE_QR_$roll';
-        final dept = studentRes['department']?.toString() ?? 'Information Technology';
-
-        return UserModel(
-          id: studentRes['user_id']?.toString() ?? 'u_${roll.toLowerCase()}',
-          name: name,
-          email: '${roll.toLowerCase()}@sasi.ac.in', // derived, not from DB
-          rollNumber: roll,
-          role: UserRole.student,
-          department: dept,
-          academicDetails: 'B.Tech IT • $yr',
-          yearLevel: yr,
-          section: sec,
-          labPassId: qr,
-          labPassRoom: 'IT Lab & Turnstile Gate #2',
-          labPassExpiry: 'AY 2026-2027',
-          cgpa: 8.94,
-          attendancePercent: 92,
-        );
+        matchedUserId = studentRes['user_id']?.toString();
       }
 
       // 2. Check staff table (username/employee_id + password_hash)
-      final staffRes = await c
-          .from('staff')
-          .select()
-          .or('username.eq.$u,employee_id.ilike.$u')
-          .eq('password_hash', p)
-          .maybeSingle();
-
-      if (staffRes != null) {
-        return UserModel(
-          id: staffRes['user_id']?.toString() ?? 'u_staff_$u',
-          name: staffRes['name']?.toString() ?? 'Department Faculty',
-          email: '${staffRes['employee_id']?.toString() ?? u}@sasi.ac.in',
-          rollNumber: staffRes['employee_id']?.toString() ?? u,
-          role: UserRole.staff,
-          department: staffRes['department']?.toString() ?? 'Information Technology',
-          academicDetails: staffRes['designation']?.toString() ?? 'Faculty',
-          yearLevel: 'Faculty',
-          section: staffRes['cabin']?.toString() ?? 'IT Staff Room',
-          phoneNumber: staffRes['phone']?.toString() ?? '',
-          labPassId: 'FAC-AUTH-${staffRes['employee_id']}',
-          labPassRoom: staffRes['cabin']?.toString() ?? 'IT Department',
-          labPassExpiry: 'Staff Gate Clearance',
-          cgpa: 0,
-          attendancePercent: 98,
-        );
+      if (matchedUserId == null) {
+        final staffRes = await c
+            .from('staff')
+            .select('user_id')
+            .or('username.ilike.$u,employee_id.ilike.$u')
+            .eq('password_hash', p)
+            .maybeSingle();
+        if (staffRes != null) {
+          matchedUserId = staffRes['user_id']?.toString();
+        }
       }
 
       // 3. Check users table for admin (username + password_hash)
-      final adminRes = await c
-          .from('users')
-          .select()
-          .eq('username', u)
-          .eq('password_hash', p)
-          .inFilter('role', ['SUPER_ADMIN', 'ADMIN'])
-          .maybeSingle();
-
-      if (adminRes != null) {
-        return UserModel(
-          id: adminRes['id']?.toString() ?? 'u_admin',
-          name: 'Admin',
-          email: 'admin@sasi.ac.in',
-          rollNumber: adminRes['username']?.toString() ?? 'ADMIN',
-          role: UserRole.admin,
-          department: adminRes['department']?.toString() ?? 'Information Technology',
-          academicDetails: 'System Administrator',
-          yearLevel: 'N/A',
-          section: 'Admin Office',
-          labPassId: 'ADMIN-ROOT-KEY',
-          labPassRoom: 'Full Campus Access',
-          labPassExpiry: 'Permanent',
-          cgpa: 0,
-          attendancePercent: 100,
-        );
+      if (matchedUserId == null) {
+        final adminRes = await c
+            .from('users')
+            .select('id')
+            .or('username.ilike.$u,email.ilike.$u')
+            .eq('password_hash', p)
+            .inFilter('role', ['SUPER_ADMIN', 'ADMIN'])
+            .maybeSingle();
+        if (adminRes != null) {
+          matchedUserId = adminRes['id']?.toString();
+        }
       }
 
-      return null;
+      if (matchedUserId == null) {
+        return null;
+      }
+
+      // 4. Fetch authoritative server-side profile and role from `profiles` table
+      return await fetchUserProfileById(matchedUserId);
     } catch (e) {
+      debugPrint('SupabaseService.fetchUserByCredentials error: $e');
       return null;
     }
+  }
+
+  Future<UserModel?> fetchUserProfileById(String userId) async {
+    final c = client;
+    if (c == null) return null;
+    try {
+      final res = await c
+          .from('profiles')
+          .select()
+          .eq('id', userId)
+          .maybeSingle();
+
+      if (res != null) {
+        return _mapProfileRowToUser(res);
+      }
+    } catch (e) {
+      debugPrint('SupabaseService.fetchUserProfileById error: $e');
+    }
+    return null;
   }
 
   Future<UserModel?> fetchUserProfile(String identifier) async {
@@ -167,77 +143,55 @@ class SupabaseService extends ChangeNotifier {
     final q = identifier.trim();
     if (q.isEmpty) return null;
 
-    // Extract roll number if full email was entered e.g. 22IT049@sasi.ac.in -> 22IT049
     String prefix = q;
     if (q.contains('@')) {
       prefix = q.split('@').first.trim();
     }
 
     try {
-      // 1. Check students table by roll_no or user_id
-      final studentRes = await c
-          .from('students')
+      // Authoritative lookup on profiles table
+      final res = await c
+          .from('profiles')
           .select()
-          .or('roll_no.ilike.$prefix,user_id.eq.$prefix')
+          .or('id.eq.$q,email.ilike.$q,student_id.ilike.$prefix,student_id.ilike.$q')
           .maybeSingle();
 
-      if (studentRes != null) {
-        final roll = studentRes['roll_no']?.toString() ?? prefix;
-        final name = studentRes['name']?.toString() ?? 'IT Student';
-        final yr = studentRes['year_level']?.toString() ?? '3rd Year';
-        final sec = studentRes['section']?.toString() ?? 'B';
-        final qr = studentRes['qr_token']?.toString() ?? 'ELITE_QR_$roll';
-        final dept = studentRes['department']?.toString() ?? 'Information Technology';
-
-        return UserModel(
-          id: studentRes['user_id']?.toString() ?? 'u_${roll.toLowerCase()}',
-          name: name,
-          email: '${roll.toLowerCase()}@sasi.ac.in',
-          rollNumber: roll,
-          role: UserRole.student,
-          department: dept,
-          academicDetails: 'B.Tech IT • $yr',
-          yearLevel: yr,
-          section: sec,
-          labPassId: qr,
-          labPassRoom: 'IT Lab & Turnstile Gate #2',
-          labPassExpiry: 'AY 2026-2027',
-          cgpa: 8.94,
-          attendancePercent: 92,
-        );
+      if (res != null) {
+        return _mapProfileRowToUser(res);
       }
-
-      // 2. Check staff table by employee_id or user_id
-      final staffRes = await c
-          .from('staff')
-          .select()
-          .or('employee_id.ilike.$prefix,user_id.eq.$prefix')
-          .maybeSingle();
-
-      if (staffRes != null) {
-        return UserModel(
-          id: staffRes['user_id']?.toString() ?? 'u_staff',
-          name: staffRes['name']?.toString() ?? 'Department Faculty',
-          email: '${(staffRes['employee_id'] ?? prefix).toString().toLowerCase()}@sasi.ac.in',
-          rollNumber: staffRes['employee_id']?.toString() ?? 'FAC-IT',
-          role: UserRole.staff,
-          department: staffRes['department']?.toString() ?? 'Information Technology',
-          academicDetails: staffRes['designation']?.toString() ?? 'Faculty Coordinator',
-          yearLevel: 'Faculty',
-          section: staffRes['cabin']?.toString() ?? 'IT Staff Room A',
-          phoneNumber: staffRes['phone']?.toString() ?? '',
-          labPassId: 'FAC-AUTH-${staffRes['employee_id']}',
-          labPassRoom: staffRes['cabin']?.toString() ?? 'IT Department',
-          labPassExpiry: 'Staff Gate Clearance',
-          cgpa: 0,
-          attendancePercent: 98,
-        );
-      }
-
     } catch (e) {
       debugPrint('SupabaseService.fetchUserProfile error: $e');
     }
     return null;
+  }
+
+  UserModel _mapProfileRowToUser(Map<String, dynamic> row) {
+    final roleStr = (row['role'] ?? 'student').toString().trim().toLowerCase();
+    final userRole = roleStr == 'admin'
+        ? UserRole.admin
+        : (roleStr == 'staff' ? UserRole.staff : UserRole.student);
+
+    return UserModel(
+      id: row['id']?.toString() ?? '',
+      name: row['name']?.toString() ?? 'User',
+      email: row['email']?.toString() ?? '',
+      rollNumber: row['student_id']?.toString() ?? '',
+      role: userRole,
+      department: row['department']?.toString() ?? 'Information Technology',
+      academicDetails: row['academic_details']?.toString() ??
+          (userRole == UserRole.student ? 'B.Tech IT' : 'Department Faculty'),
+      yearLevel: row['year']?.toString() ??
+          (userRole == UserRole.student ? '3rd Year' : 'Faculty'),
+      section: row['section']?.toString() ?? 'A',
+      phoneNumber: row['phone_number']?.toString() ?? '',
+      status: row['status']?.toString() ?? 'ACTIVE',
+      labPassId: row['lab_pass_id']?.toString() ?? 'ELITE_QR_PASS',
+      labPassRoom: row['lab_pass_room']?.toString() ?? 'IT Lab & Turnstile Gate #2',
+      labPassExpiry: row['lab_pass_expiry']?.toString() ?? 'AY 2026-2027',
+      cgpa: (row['cgpa'] as num?)?.toDouble() ??
+          (userRole == UserRole.student ? 8.94 : 0.0),
+      attendancePercent: (row['attendance_percent'] as num?)?.toInt() ?? 90,
+    );
   }
 
   // ─── Events (CRUD for Staff/Admin, View & Register for Students) ──────────

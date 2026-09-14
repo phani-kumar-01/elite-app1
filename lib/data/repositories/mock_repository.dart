@@ -1,62 +1,7 @@
 import '../models/app_models.dart';
 
 class MockRepository {
-  /// Real Student Profile: Phani Kumar Koppisetti (24K61A1259)
-  static final UserModel studentUser = UserModel(
-    id: "u_24k61a1259",
-    name: "Phani Kumar Koppisetti",
-    email: "phanikumar.koppisetti24@sasi.ac.in",
-    rollNumber: "24K61A1259",
-    role: UserRole.student,
-    department: "Information Technology",
-    academicDetails: "B.Tech IT • 3rd Year Section B",
-    yearLevel: "3rd Year",
-    section: "B",
-    labPassId: "ELITE_QR_24K61A1259",
-    labPassRoom: "IT Lab & Turnstile Gate #2",
-    labPassExpiry: "AY 2026-2027",
-    cgpa: 9.15,
-    attendancePercent: 92,
-  );
-
-  /// Real Staff Profile: Dr. AVN Chandra Sekhar (HoD IT)
-  static final UserModel staffUser = UserModel(
-    id: "u_staff01",
-    name: "Dr. AVN Chandra Sekhar",
-    email: "hod_it@sasi.ac.in",
-    rollNumber: "EMP_IT_01",
-    role: UserRole.staff,
-    department: "Information Technology",
-    academicDetails: "Head of Department (HoD) • Professor",
-    yearLevel: "Faculty",
-    section: "IT HOD Cabin",
-    phoneNumber: "+91 98480 12345",
-    labPassId: "FAC-IT-01",
-    labPassRoom: "All IT Facilities & Server Rooms",
-    labPassExpiry: "Full Faculty Clearance",
-    cgpa: 0,
-    attendancePercent: 98,
-  );
-
-  /// Real Super Admin Profile
-  static final UserModel adminUser = UserModel(
-    id: "u_admin",
-    name: "System Administrator",
-    email: "admin@sasi.ac.in",
-    rollNumber: "ADMIN-IT",
-    role: UserRole.admin,
-    department: "Information Technology",
-    academicDetails: "ELITE IT Department Super Admin",
-    yearLevel: "Administration",
-    section: "Campus Core Systems",
-    labPassId: "ROOT-KEY-00",
-    labPassRoom: "Campus Data Center & Core Infrastructure",
-    labPassExpiry: "Permanent Admin Clearance",
-    cgpa: 0,
-    attendancePercent: 100,
-  );
-
-  /// Real Department Events
+  /// Department Initial Events (fallback / template)
   static List<EventModel> getInitialEvents() => [
     EventModel(
       id: "ev_vibe_coding",
