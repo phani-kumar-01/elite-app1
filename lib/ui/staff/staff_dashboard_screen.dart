@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/app_widgets.dart';
 import '../../state/app_state.dart';
-import '../auth/app_start_screen.dart';
 
 class StaffDashboardScreen extends StatefulWidget {
   final int initialTab;
@@ -803,11 +803,7 @@ class _StaffDashboardScreenState extends State<StaffDashboardScreen> {
             child: OutlinedButton.icon(
               onPressed: () {
                 state.logout();
-                Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(builder: (_) => const AppStartScreen()),
-                  (route) => false,
-                );
+                context.go('/login');
               },
               style: OutlinedButton.styleFrom(
                 side: const BorderSide(color: AppColors.error),

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../data/models/app_models.dart';
 import '../data/repositories/mock_repository.dart';
 import '../core/services/supabase_service.dart';
-import '../core/config/supabase_config.dart';
 
 class AppState extends ChangeNotifier {
   final SupabaseService _supabaseService;
@@ -16,39 +15,11 @@ class AppState extends ChangeNotifier {
   List<AppNotification> _notifications = MockRepository.getInitialNotifications();
   List<LiveLeaderboardEntry> _leaderboard = [];
 
-  // Registrations (Individual & Team)
-  final List<EventRegistrationModel> _registrations = [
-    EventRegistrationModel(
-      id: 'team_ev_tech_quiz_alpha',
-      eventId: 'ev_tech_quiz',
-      isTeam: true,
-      teamName: 'Team Alpha',
-      studentId: 's_01',
-      studentRoll: '24K61A1259',
-      studentName: 'Phani Kumar',
-      studentEmail: '24K61A1259@sasi.ac.in',
-      studentYear: '3rd Year',
-      members: [
-        TeamMemberInfo(studentId: 's_01', studentRoll: '24K61A1259', studentName: 'Phani Kumar', studentEmail: '24K61A1259@sasi.ac.in', studentDept: 'IT', studentYear: '3rd Year', isLeader: true),
-        TeamMemberInfo(studentId: 's_02', studentRoll: '23CS042', studentName: 'Rahul Kumar', studentEmail: '23CS042@sasi.ac.in', studentDept: 'CSE', studentYear: '2nd Year'),
-        TeamMemberInfo(studentId: 's_03', studentRoll: '23IT015', studentName: 'Sathvik Varma', studentEmail: '23IT015@sasi.ac.in', studentDept: 'IT', studentYear: '2nd Year'),
-        TeamMemberInfo(studentId: 's_04', studentRoll: '23IT088', studentName: 'Bhavitha S', studentEmail: '23IT088@sasi.ac.in', studentDept: 'IT', studentYear: '2nd Year'),
-      ],
-      status: 'CONFIRMED',
-      registeredAt: '2026-09-12T10:00:00Z',
-    ),
-  ];
+  // Registrations (loaded from Supabase on sync)
+  final List<EventRegistrationModel> _registrations = [];
 
-  // Staff & Admin Directory Cache
-  List<UserModel> _studentsRoster = [
-    UserModel(id: 's_01', name: 'Phani Kumar', email: '24K61A1259@sasi.ac.in', rollNumber: '24K61A1259', role: UserRole.student, department: 'Information Technology', academicDetails: 'B.Tech IT • 3rd Year', yearLevel: '3rd Year', section: 'B'),
-    UserModel(id: 's_02', name: 'Rahul Kumar', email: '23CS042@sasi.ac.in', rollNumber: '23CS042', role: UserRole.student, department: 'Computer Science & Eng', academicDetails: 'B.Tech CSE • 2nd Year', yearLevel: '2nd Year', section: 'A'),
-    UserModel(id: 's_03', name: 'Sathvik Varma', email: '23IT015@sasi.ac.in', rollNumber: '23IT015', role: UserRole.student, department: 'Information Technology', academicDetails: 'B.Tech IT • 2nd Year', yearLevel: '2nd Year', section: 'A'),
-    UserModel(id: 's_04', name: 'Bhavitha S', email: '23IT088@sasi.ac.in', rollNumber: '23IT088', role: UserRole.student, department: 'Information Technology', academicDetails: 'B.Tech IT • 2nd Year', yearLevel: '2nd Year', section: 'B'),
-    UserModel(id: 's_05', name: 'M. Manoj Reddy', email: '22IT049@sasi.ac.in', rollNumber: '22IT049', role: UserRole.student, department: 'Information Technology', academicDetails: 'B.Tech IT • 4th Year', yearLevel: '4th Year', section: 'A'),
-    UserModel(id: 's_06', name: 'K. Sarvagna', email: '22CS102@sasi.ac.in', rollNumber: '22CS102', role: UserRole.student, department: 'Computer Science & Eng', academicDetails: 'B.Tech CSE • 4th Year', yearLevel: '4th Year', section: 'B'),
-    UserModel(id: 's_07', name: 'P. Sai Teja', email: '23AI018@sasi.ac.in', rollNumber: '23AI018', role: UserRole.student, department: 'Artificial Intelligence', academicDetails: 'B.Tech AIML • 2nd Year', yearLevel: '2nd Year', section: 'A'),
-  ];
+  // Student roster — loaded from Supabase on sync
+  List<UserModel> _studentsRoster = [];
   List<UserModel> _staffRoster = [];
 
   String _selectedEventCategory = "All";
@@ -57,10 +28,17 @@ class AppState extends ChangeNotifier {
   AppState([SupabaseService? supabaseService])
       : _supabaseService = supabaseService ?? SupabaseService() {
     _leaderboard = _supabaseService.getLiveLeaderboard();
-    syncFromSupabase();
+    // Sync only if a user is already logged in (session persisted)
+    _restoreSession();
+  }
+
+  void _restoreSession() {
+    // No Supabase OAuth session to restore — login is credential-based.
+    // We rely on in-memory state only.
   }
 
   UserModel get currentUser => _currentUser;
+  bool get isLoggedIn => _currentUser.id != 'mock_student';
   bool get isStudent => _currentUser.isStudent;
   bool get isStaff => _currentUser.isStaff;
   bool get isAdmin => _currentUser.isAdmin;
@@ -111,84 +89,48 @@ class AppState extends ChangeNotifier {
     return _registrations.any((r) => r.eventId == eventId && r.containsStudent(target));
   }
 
-  // ─── Authentication & Role Determination ───────────────────────────────────
+  // ─── Authentication ──────────────────────────────────────────────────────────
 
-  Future<Map<String, dynamic>> loginWithCollegeEmail(String email) async {
-    final cleanEmail = email.trim().toLowerCase();
-
-    // 1. Strict college domain check: ONLY sasi.ac.in
-    if (!SupabaseConfig.isValidCollegeEmail(cleanEmail)) {
-      return {
-        'success': false,
-        'message': 'Access restricted to official college email only (@${SupabaseConfig.collegeDomain}).',
-      };
-    }
-
+  /// Login with roll number (or admin username) + password.
+  /// Students: roll_no + password_hash (same as roll_no lowercase, stored in students table).
+  /// Staff: username/employee_id + password_hash (stored in staff table).
+  /// Admin: username + password_hash (stored in users table with role SUPER_ADMIN).
+  Future<Map<String, dynamic>> loginWithCredentials({
+    required String username,
+    required String password,
+  }) async {
     _isLoadingFromSupabase = true;
     notifyListeners();
 
     try {
-      // 2. Fetch authoritative profile & role from database
-      final profile = await _supabaseService.fetchUserProfile(cleanEmail);
+      final profile = await _supabaseService.fetchUserByCredentials(
+        username: username.trim(),
+        password: password.trim(),
+      );
 
       if (profile != null) {
         _currentUser = profile;
         await syncFromSupabase();
         _isLoadingFromSupabase = false;
         notifyListeners();
-
-        return {
-          'success': true,
-          'user': profile,
-          'role': profile.role,
-        };
-      } else {
-        // Fallback for demonstration if user not in online db table yet
-        final isStaffEmail = cleanEmail.contains('staff') || cleanEmail.contains('faculty') || cleanEmail.contains('hod');
-        final isAdminEmail = cleanEmail.contains('admin') || cleanEmail.contains('principal');
-
-        final fallbackRole = isAdminEmail
-            ? UserRole.admin
-            : isStaffEmail
-                ? UserRole.staff
-                : UserRole.student;
-
-        _currentUser = UserModel(
-          id: 'u_${cleanEmail.split('@').first}',
-          name: cleanEmail.split('@').first.toUpperCase(),
-          email: cleanEmail,
-          rollNumber: cleanEmail.split('@').first.toUpperCase(),
-          role: fallbackRole,
-          department: 'Information Technology',
-          academicDetails: fallbackRole == UserRole.student
-              ? 'B.Tech IT • 3rd Year'
-              : fallbackRole == UserRole.staff
-                  ? 'Faculty Coordinator'
-                  : 'System Administrator',
-          yearLevel: fallbackRole == UserRole.student ? '3rd Year' : 'Department',
-          section: 'B',
-          labPassId: 'ELITE_QR_${cleanEmail.split('@').first.toUpperCase()}',
-        );
-
-        await syncFromSupabase();
-        _isLoadingFromSupabase = false;
-        notifyListeners();
-
-        return {
-          'success': true,
-          'user': _currentUser,
-          'role': fallbackRole,
-        };
+        return {'success': true};
       }
+
+      _isLoadingFromSupabase = false;
+      notifyListeners();
+      return {'success': false, 'message': 'Invalid credentials. Please try again.'};
     } catch (e) {
       _isLoadingFromSupabase = false;
       notifyListeners();
-      return {'success': false, 'message': 'Authentication failed: $e'};
+      return {'success': false, 'message': 'Login failed: $e'};
     }
   }
 
   void logout() {
     _currentUser = MockRepository.studentUser;
+    _events = MockRepository.getInitialEvents();
+    _polls = MockRepository.getInitialPolls();
+    _notifications = MockRepository.getInitialNotifications();
     notifyListeners();
   }
 
@@ -201,8 +143,8 @@ class AppState extends ChangeNotifier {
     notifyListeners();
 
     try {
-      // 1. Fetch live user profile
-      final liveUser = await _supabaseService.fetchUserProfile(_currentUser.rollNumber);
+      // 1. Fetch live user profile (use email as primary key for reliable lookup)
+      final liveUser = await _supabaseService.fetchUserProfile(_currentUser.email);
       if (liveUser != null) {
         _currentUser = liveUser;
       }

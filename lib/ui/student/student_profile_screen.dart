@@ -1,12 +1,12 @@
 import '../../core/widgets/permission_dialog.dart';
 import '../features/contacts/contacts_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/app_widgets.dart';
 import '../../state/app_state.dart';
-import '../auth/app_start_screen.dart';
 
 class StudentProfileScreen extends StatelessWidget {
   const StudentProfileScreen({super.key});
@@ -106,7 +106,7 @@ class StudentProfileScreen extends StatelessWidget {
                             ),
                             const SizedBox(height: 2),
                             Text(
-                              'ID: ${user.rollNumber} • ${user.academicDetails}',
+                              'Roll No: ${user.rollNumber}',
                               style: GoogleFonts.inter(
                                 fontSize: 12,
                                 color: AppColors.onPrimaryContainer,
@@ -123,9 +123,9 @@ class StudentProfileScreen extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      _idMetric('CGPA', '${user.cgpa} / 10'),
-                      _idMetric('ATTENDANCE', '${user.attendancePercent}%'),
-                      _idMetric('LAB PASS', '#${user.labPassId}'),
+                      _idMetric('YEAR', user.yearLevel),
+                      _idMetric('SECTION', user.section),
+                      _idMetric('DEPT', 'IT'),
                     ],
                   ),
                 ],
@@ -147,11 +147,9 @@ class StudentProfileScreen extends StatelessWidget {
               ),
               child: Column(
                 children: [
-                  _infoTile('Institutional Email', user.email, Icons.email_outlined),
-                  const Divider(height: 1, color: AppColors.outline),
                   _infoTile('Department', user.department, Icons.domain),
                   const Divider(height: 1, color: AppColors.outline),
-                  _infoTile('Assigned Academic Lab', user.labPassRoom, Icons.science_outlined),
+                  _infoTile('Year & Section', '${user.yearLevel} • Section ${user.section}', Icons.class_outlined),
                 ],
               ),
             ),
@@ -192,11 +190,8 @@ class StudentProfileScreen extends StatelessWidget {
               width: double.infinity,
               child: OutlinedButton.icon(
                 onPressed: () {
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (_) => const AppStartScreen()),
-                    (route) => false,
-                  );
+                  context.read<AppState>().logout();
+                  context.go('/login');
                 },
                 style: OutlinedButton.styleFrom(
                   side: const BorderSide(color: AppColors.secondary),

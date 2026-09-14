@@ -28,9 +28,7 @@ class StudentHomeScreen extends StatelessWidget {
         onNotificationTap: () => onNavigateTab?.call(3),
       ),
       body: RefreshIndicator(
-        onRefresh: () async {
-          await Future.delayed(const Duration(milliseconds: 600));
-        },
+        onRefresh: () => context.read<AppState>().syncFromSupabase(),
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
@@ -139,7 +137,7 @@ class StudentHomeScreen extends StatelessWidget {
               ),
               const SizedBox(height: 16),
 
-              // Active Lab Pass Banner (Stitch Card)
+              // QR Event Pass Card
               Container(
                 decoration: BoxDecoration(
                   color: AppColors.primaryContainer,
@@ -153,117 +151,60 @@ class StudentHomeScreen extends StatelessWidget {
                   ],
                 ),
                 padding: const EdgeInsets.all(18),
-                child: Column(
+                child: Row(
                   children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          width: 48,
-                          height: 48,
-                          decoration: BoxDecoration(
-                            color: AppColors.secondary,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: const Icon(Icons.qr_code_2, color: Colors.white, size: 26),
-                        ),
-                        const SizedBox(width: 14),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                    decoration: BoxDecoration(
-                                      color: AppColors.secondary,
-                                      borderRadius: BorderRadius.circular(4),
-                                    ),
-                                    child: Text(
-                                      'ACTIVE PASS',
-                                      style: GoogleFonts.inter(
-                                        fontSize: 9,
-                                        fontWeight: FontWeight.w800,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    'ID: #${user.labPassId}',
-                                    style: GoogleFonts.inter(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w500,
-                                      color: AppColors.onPrimaryContainer,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                user.labPassRoom,
-                                style: GoogleFonts.inter(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w700,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        ElevatedButton.icon(
-                          onPressed: () => QrPassDialog.show(context, user),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.secondary,
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                            visualDensity: VisualDensity.compact,
-                          ),
-                          icon: const Icon(Icons.fullscreen, size: 16),
-                          label: const Text('View QR'),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 14),
                     Container(
-                      padding: const EdgeInsets.only(top: 10),
-                      decoration: const BoxDecoration(
-                        border: Border(top: BorderSide(color: Color(0xFF2E384D))),
+                      width: 48,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        color: AppColors.secondary,
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      child: const Icon(Icons.qr_code_2, color: Colors.white, size: 26),
+                    ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Row(
-                            children: [
-                              const Icon(Icons.schedule, size: 14, color: AppColors.secondaryContainer),
-                              const SizedBox(width: 4),
-                              Text(
-                                'Expires at ${user.labPassExpiry}',
-                                style: GoogleFonts.inter(
-                                  fontSize: 11,
-                                  color: AppColors.onPrimaryContainer,
-                                ),
-                              ),
-                            ],
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: AppColors.secondary,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Text(
+                              'EVENT PASS',
+                              style: GoogleFonts.inter(fontSize: 9, fontWeight: FontWeight.w800, color: Colors.white),
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            user.name,
+                            style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white),
                           ),
                           Text(
-                            'Authorized: AI & Systems Lab',
-                            style: GoogleFonts.inter(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white70,
-                            ),
+                            user.rollNumber,
+                            style: GoogleFonts.inter(fontSize: 11, color: AppColors.onPrimaryContainer),
                           ),
                         ],
                       ),
                     ),
+                    ElevatedButton.icon(
+                      onPressed: () => QrPassDialog.show(context, user),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.secondary,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        visualDensity: VisualDensity.compact,
+                      ),
+                      icon: const Icon(Icons.fullscreen, size: 16),
+                      label: const Text('View QR'),
+                    ),
                   ],
                 ),
               ),
-              const SizedBox(height: 22),
 
               // Quick Actions Grid (4 college event essentials)
               Text(

@@ -4,7 +4,7 @@ Download the appropriate APK binary for your Android device:
 
 | Architecture | APK File | Size | Suitable For |
 | :--- | :--- | :--- | :--- |
-| **v1.0.5 Release (ARM64)** *(Latest)* | [`ELITE_IT_v1.0.5.apk`](./ELITE_IT_v1.0.5.apk) | **18.7 MB** | Official 404 students from Excel + @sasi.ac.in Admin/Staff integration |
+| **v1.0.6 Release (ARM64)** *(Latest)* | [`ELITE_IT_v1.0.6.apk`](./ELITE_IT_v1.0.6.apk) | **18.7 MB** | Direct Roll No login, Admin in Supabase DB, Clean Event Pass & Profile, v1.0.6 release |
 | **ARM 64-bit** *(Recommended)* | [`ELITE_IT_arm64-v8a.apk`](./ELITE_IT_arm64-v8a.apk) | **18.7 MB** | **All modern Android phones** (Samsung, OnePlus, Google Pixel, Xiaomi, Vivo, Oppo, Realme, etc.) |
 | **ARM 32-bit** | [`ELITE_IT_armeabi-v7a.apk`](./ELITE_IT_armeabi-v7a.apk) | **16.3 MB** | Older 32-bit Android smartphones |
 | **x86 64-bit** | [`ELITE_IT_x86_64.apk`](./ELITE_IT_x86_64.apk) | **20.1 MB** | Android Studio Emulators & Chromebooks |

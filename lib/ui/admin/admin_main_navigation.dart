@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../core/theme/app_theme.dart';
 import '../../state/app_state.dart';
-import '../auth/app_start_screen.dart';
 
 class AdminMainNavigation extends StatefulWidget {
   const AdminMainNavigation({super.key});
@@ -142,11 +142,7 @@ class _AdminMainNavigationState extends State<AdminMainNavigation> {
               title: const Text('Sign Out', style: TextStyle(color: AppColors.error, fontWeight: FontWeight.bold)),
               onTap: () {
                 state.logout();
-                Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(builder: (_) => const AppStartScreen()),
-                  (route) => false,
-                );
+                context.go('/login');
               },
             ),
           ],
@@ -157,8 +153,17 @@ class _AdminMainNavigationState extends State<AdminMainNavigation> {
         child: _buildSectionContent(context, state, user),
       ),
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedSectionIndex > 4 ? 0 : _selectedSectionIndex,
-        onTap: (idx) => setState(() => _selectedSectionIndex = idx),
+        // Map drawer indices 5-8 to bottom-nav index 4 ("More") so the
+        // bottom bar always reflects a valid selected item.
+        currentIndex: _selectedSectionIndex.clamp(0, 4),
+        onTap: (idx) {
+          if (idx == 4) {
+            // Open drawer for "All Modules"
+            Scaffold.of(context).openDrawer();
+          } else {
+            setState(() => _selectedSectionIndex = idx);
+          }
+        },
         backgroundColor: AppColors.surface,
         selectedItemColor: AppColors.primary,
         unselectedItemColor: AppColors.onSurfaceVariant,
@@ -170,7 +175,7 @@ class _AdminMainNavigationState extends State<AdminMainNavigation> {
           BottomNavigationBarItem(icon: Icon(Icons.people_outline), activeIcon: Icon(Icons.people), label: 'Students'),
           BottomNavigationBarItem(icon: Icon(Icons.event_outlined), activeIcon: Icon(Icons.event), label: 'Events'),
           BottomNavigationBarItem(icon: Icon(Icons.poll_outlined), activeIcon: Icon(Icons.poll), label: 'Polls'),
-          BottomNavigationBarItem(icon: Icon(Icons.menu), activeIcon: Icon(Icons.menu_open), label: 'All Modules'),
+          BottomNavigationBarItem(icon: Icon(Icons.menu_book_outlined), activeIcon: Icon(Icons.menu_book), label: 'More'),
         ],
       ),
     );
@@ -223,8 +228,8 @@ class _AdminMainNavigationState extends State<AdminMainNavigation> {
             mainAxisSpacing: 10,
             childAspectRatio: 1.4,
             children: [
-              _kpiBox('Enrolled Students', '${state.studentsRoster.isNotEmpty ? state.studentsRoster.length : 381}', Icons.school, AppColors.secondary),
-              _kpiBox('Faculty Staff', '${state.staffRoster.isNotEmpty ? state.staffRoster.length : 24}', Icons.badge, AppColors.primary),
+              _kpiBox('Enrolled Students', '${state.studentsRoster.length}', Icons.school, AppColors.secondary),
+              _kpiBox('Faculty Staff', '${state.staffRoster.length}', Icons.badge, AppColors.primary),
               _kpiBox('Active Events', '${state.events.length}', Icons.event, Colors.teal),
               _kpiBox('Total Registrations', '$totalReg', Icons.how_to_reg, Colors.orange),
               _kpiBox('Turnstile Scans', '${state.attendanceLogs.length}', Icons.qr_code_scanner, Colors.purple),
@@ -280,9 +285,9 @@ class _AdminMainNavigationState extends State<AdminMainNavigation> {
           padding: const EdgeInsets.all(16),
           child: TextField(
             onChanged: (v) => setState(() => _studentSearch = v),
-            decoration: const InputDecoration(
-              hintText: 'Search 381 Students by Roll or Name...',
-              prefixIcon: Icon(Icons.search),
+            decoration: InputDecoration(
+              hintText: 'Search ${state.studentsRoster.length} students by roll or name...',
+              prefixIcon: const Icon(Icons.search),
               isDense: true,
             ),
           ),
@@ -351,10 +356,16 @@ class _AdminMainNavigationState extends State<AdminMainNavigation> {
   // ─── 3. Events ────────────────────────────────────────────────────────────
 
   Widget _buildEventsSection(BuildContext context, AppState state) {
-    return SingleChildScrollView(
+    final events = state.events;
+    if (events.isEmpty) {
+      return const Center(child: Text('No events found.'));
+    }
+    return ListView.builder(
       padding: const EdgeInsets.all(16),
-      child: Column(
-        children: state.events.map((e) => Container(
+      itemCount: events.length,
+      itemBuilder: (ctx, i) {
+        final e = events[i];
+        return Container(
           margin: const EdgeInsets.only(bottom: 12),
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
@@ -374,9 +385,11 @@ class _AdminMainNavigationState extends State<AdminMainNavigation> {
                       children: [
                         Row(
                           children: [
-                            Text(e.title, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15)),
-                            const SizedBox(width: 8),
-                            if (e.isTeamEvent)
+                            Flexible(
+                              child: Text(e.title, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15), overflow: TextOverflow.ellipsis),
+                            ),
+                            if (e.isTeamEvent) ...[
+                              const SizedBox(width: 8),
                               Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                                 decoration: BoxDecoration(
@@ -388,6 +401,7 @@ class _AdminMainNavigationState extends State<AdminMainNavigation> {
                                   style: const TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: AppColors.secondary),
                                 ),
                               ),
+                            ],
                           ],
                         ),
                         const SizedBox(height: 2),
@@ -412,7 +426,7 @@ class _AdminMainNavigationState extends State<AdminMainNavigation> {
                     style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.onSurfaceVariant),
                   ),
                   ElevatedButton.icon(
-                    onPressed: () => _showAdminEventRoster(context, state, e),
+                    onPressed: () => _showAdminEventRoster(ctx, state, e),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
                       foregroundColor: Colors.white,
@@ -426,8 +440,8 @@ class _AdminMainNavigationState extends State<AdminMainNavigation> {
               ),
             ],
           ),
-        )).toList(),
-      ),
+        );
+      },
     );
   }
 
@@ -815,11 +829,7 @@ class _AdminMainNavigationState extends State<AdminMainNavigation> {
           title: const Text('Sign Out of Admin Console', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
           onTap: () {
             state.logout();
-            Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (_) => const AppStartScreen()),
-              (route) => false,
-            );
+            context.go('/login');
           },
         ),
       ],

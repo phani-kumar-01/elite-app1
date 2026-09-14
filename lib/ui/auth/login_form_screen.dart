@@ -2,11 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../core/theme/app_theme.dart';
-import '../../core/config/supabase_config.dart';
 import '../../state/app_state.dart';
-import '../student/student_main_navigation.dart';
-import '../staff/staff_main_navigation.dart';
-import '../admin/admin_main_navigation.dart';
 
 class LoginFormScreen extends StatefulWidget {
   final bool isStaffOrAdmin;
@@ -21,70 +17,33 @@ class LoginFormScreen extends StatefulWidget {
 }
 
 class _LoginFormScreenState extends State<LoginFormScreen> {
-  late TextEditingController _emailController;
-  final TextEditingController _passwordController = TextEditingController(text: "••••••••");
-  bool _obscurePassword = true;
   bool _isLoading = false;
   String? _errorMessage;
 
-  @override
-  void initState() {
-    super.initState();
-    // Pre-fill with a valid sasi.ac.in email for easy testing
-    if (widget.isStaffOrAdmin) {
-      _emailController = TextEditingController(text: "hod_it@sasi.ac.in");
-    } else {
-      _emailController = TextEditingController(text: "24K61A1259@sasi.ac.in");
-    }
-  }
-
-  @override
-  void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
-    super.dispose();
-  }
-
   void _handleLogin() async {
-    final email = _emailController.text.trim().toLowerCase();
-
-    // 1. Strict college domain check: ONLY sasi.ac.in
-    if (!SupabaseConfig.isValidCollegeEmail(email)) {
-      setState(() {
-        _errorMessage = "Authentication failed: Only @${SupabaseConfig.collegeDomain} domain is permitted.";
-      });
-      return;
-    }
-
     setState(() {
       _isLoading = true;
       _errorMessage = null;
     });
 
     final appState = context.read<AppState>();
-    final result = await appState.loginWithCollegeEmail(email);
+    final result = await appState.loginWithCredentials(
+      username: '',
+      password: '',
+    );
 
     if (!mounted) return;
 
     setState(() => _isLoading = false);
 
     if (result['success'] == true) {
-      final UserRole role = result['role'];
-
-      // Route strictly based on the database-resolved role
-      Widget targetScreen;
-      if (role == UserRole.student) {
-        targetScreen = const StudentMainNavigation();
-      } else if (role == UserRole.staff) {
-        targetScreen = const StaffMainNavigation();
-      } else {
-        targetScreen = const AdminMainNavigation();
-      }
-
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (_) => targetScreen),
-        (route) => false,
+      // The auth state listener in app_state.dart will handle the redirect 
+      // after the OAuth flow finishes. Just show a success toast here.
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(result['message']),
+          backgroundColor: AppColors.primary,
+        ),
       );
     } else {
       setState(() {
@@ -95,8 +54,6 @@ class _LoginFormScreenState extends State<LoginFormScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final emailText = _emailController.text.trim().toLowerCase();
-    final isDomainValid = SupabaseConfig.isValidCollegeEmail(emailText);
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -170,80 +127,6 @@ class _LoginFormScreenState extends State<LoginFormScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Email Field
-                        Text(
-                          'Institutional College Email',
-                          style: GoogleFonts.inter(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.onSurface,
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        TextField(
-                          controller: _emailController,
-                          keyboardType: TextInputType.emailAddress,
-                          onChanged: (_) => setState(() {}),
-                          decoration: InputDecoration(
-                            prefixIcon: const Icon(Icons.mail_outline, size: 20, color: AppColors.onSurfaceVariant),
-                            hintText: widget.isStaffOrAdmin ? 'faculty@sasi.ac.in' : '24K61A1259@sasi.ac.in',
-                            suffixIcon: isDomainValid
-                                ? const Icon(Icons.check_circle, color: AppColors.success, size: 20)
-                                : null,
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-
-                        // Domain Validation Indicator
-                        Row(
-                          children: [
-                            Icon(
-                              isDomainValid ? Icons.verified : Icons.info_outline,
-                              size: 13,
-                              color: isDomainValid ? AppColors.success : AppColors.onSurfaceVariant,
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              isDomainValid
-                                  ? 'Verified @sasi.ac.in institutional domain'
-                                  : 'Must end with @sasi.ac.in',
-                              style: GoogleFonts.inter(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w500,
-                                color: isDomainValid ? AppColors.success : AppColors.onSurfaceVariant,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-
-                        // Password Field
-                        Text(
-                          'Password',
-                          style: GoogleFonts.inter(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.onSurface,
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        TextField(
-                          controller: _passwordController,
-                          obscureText: _obscurePassword,
-                          decoration: InputDecoration(
-                            prefixIcon: const Icon(Icons.lock_outline, size: 20, color: AppColors.onSurfaceVariant),
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                _obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
-                                size: 20,
-                                color: AppColors.onSurfaceVariant,
-                              ),
-                              onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-
                         // Error message if any
                         if (_errorMessage != null) ...[
                           Container(
@@ -276,24 +159,29 @@ class _LoginFormScreenState extends State<LoginFormScreen> {
                           child: ElevatedButton(
                             onPressed: _isLoading ? null : _handleLogin,
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: widget.isStaffOrAdmin ? AppColors.primary : AppColors.secondary,
+                              backgroundColor: Colors.white,
+                              foregroundColor: Colors.black87,
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                              side: const BorderSide(color: Color(0xFFDDDDDD)),
                             ),
                             child: _isLoading
                                 ? const SizedBox(
                                     width: 20,
                                     height: 20,
-                                    child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5),
+                                    child: CircularProgressIndicator(color: Colors.black54, strokeWidth: 2.5),
                                   )
                                 : Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
+                                      Image.network(
+                                        'https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg',
+                                        height: 20,
+                                      ),
+                                      const SizedBox(width: 12),
                                       Text(
-                                        'Authenticate & Enter',
+                                        'Sign in with Google',
                                         style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700),
                                       ),
-                                      const SizedBox(width: 8),
-                                      const Icon(Icons.arrow_forward, size: 16),
                                     ],
                                   ),
                           ),
@@ -301,64 +189,11 @@ class _LoginFormScreenState extends State<LoginFormScreen> {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 24),
-
-                  // Quick test credentials pills
-                  Text(
-                    'Quick Test Accounts (@sasi.ac.in):',
-                    style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.onSurfaceVariant),
-                  ),
-                  const SizedBox(height: 8),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 6,
-                    alignment: WrapAlignment.center,
-                    children: [
-                      _QuickPill(
-                        label: 'Student: 24K61A1259',
-                        onTap: () => setState(() => _emailController.text = "24K61A1259@sasi.ac.in"),
-                      ),
-                      _QuickPill(
-                        label: 'Staff: hod_it',
-                        onTap: () => setState(() => _emailController.text = "hod_it@sasi.ac.in"),
-                      ),
-                      _QuickPill(
-                        label: 'Admin: admin',
-                        onTap: () => setState(() => _emailController.text = "admin@sasi.ac.in"),
-                      ),
-                    ],
-                  ),
+                  const SizedBox(height: 16),
                 ],
               ),
             ),
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class _QuickPill extends StatelessWidget {
-  final String label;
-  final VoidCallback onTap;
-
-  const _QuickPill({required this.label, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(6),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-        decoration: BoxDecoration(
-          color: AppColors.surfaceContainerLow,
-          borderRadius: BorderRadius.circular(6),
-          border: Border.all(color: AppColors.outline),
-        ),
-        child: Text(
-          label,
-          style: GoogleFonts.inter(fontSize: 11, color: AppColors.onSurface, fontWeight: FontWeight.w500),
         ),
       ),
     );

@@ -5,7 +5,7 @@ import 'core/theme/app_theme.dart';
 import 'core/services/permission_service.dart';
 import 'core/services/supabase_service.dart';
 import 'state/app_state.dart';
-import 'ui/auth/app_start_screen.dart';
+import 'core/routing/app_router.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -38,11 +38,18 @@ class EliteApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AppState(supa)),
         ChangeNotifierProvider(create: (_) => PermissionService()..checkAllPermissions()),
       ],
-      child: MaterialApp(
-        title: 'ELITE IT',
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.lightTheme,
-        home: const AppStartScreen(),
+      child: Builder(
+        builder: (context) {
+          final appState = context.read<AppState>();
+          final router = AppRouter.createRouter(appState);
+          
+          return MaterialApp.router(
+            title: 'ELITE IT',
+            debugShowCheckedModeBanner: false,
+            theme: AppTheme.lightTheme,
+            routerConfig: router,
+          );
+        },
       ),
     );
   }

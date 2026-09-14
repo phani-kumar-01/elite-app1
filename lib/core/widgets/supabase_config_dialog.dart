@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../theme/app_theme.dart';
@@ -208,20 +208,15 @@ class _SupabaseConfigDialogState extends State<SupabaseConfigDialog> {
                           final messenger = ScaffoldMessenger.of(context);
                           final nav = Navigator.of(context);
                           final appState = context.read<AppState>();
-                          final ok = await supa.updateCredentials(
-                            _urlCtrl.text.trim(),
-                            _keyCtrl.text.trim(),
-                          );
+                          // Credentials are hardcoded — just trigger a live sync
                           await appState.syncFromSupabase();
                           if (!mounted) return;
                           setState(() => _isSaving = false);
                           nav.pop();
                           messenger.showSnackBar(
-                            SnackBar(
-                              content: Text(ok
-                                  ? 'Connected to Supabase! Live sync complete.'
-                                  : 'Saved. (Placeholder/Offline mode active)'),
-                              backgroundColor: ok ? AppColors.success : AppColors.primary,
+                            const SnackBar(
+                              content: Text('Live sync complete. Supabase connection is active.'),
+                              backgroundColor: AppColors.success,
                             ),
                           );
                         },
