@@ -208,18 +208,18 @@ export default function StudentsView() {
               return (
                 <tr key={student.roll_no}>
                   <td>
-                    <span style={{ fontFamily: 'var(--font-mono)', fontWeight: '700', color: 'var(--cyan)' }}>
+                    <span style={{ fontFamily: 'var(--font-mono)', fontWeight: '600', color: 'var(--text-main)' }}>
                       {student.roll_no}
                     </span>
                   </td>
                   <td>
                     <div style={{ fontWeight: '600' }}>{student.name}</div>
-                    <div style={{ fontSize: '11px', color: 'var(--text-dim)' }}>
+                    <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
                       {student.department || 'Information Technology'}
                     </div>
                   </td>
                   <td>
-                    <span className="badge badge-indigo">
+                    <span className="badge badge-info">
                       {student.year_level} • Sec {student.section || 'B'}
                     </span>
                   </td>
@@ -227,7 +227,7 @@ export default function StudentsView() {
                   <td>
                     <button
                       onClick={() => handleToggleStatus(student)}
-                      className={`badge ${isActive ? 'badge-emerald' : 'badge-rose'}`}
+                      className={`badge ${isActive ? 'badge-success' : 'badge-danger'}`}
                       style={{ border: 'none', cursor: 'pointer', padding: '4px 10px' }}
                       title="Click to toggle active/inactive"
                     >
@@ -276,7 +276,7 @@ export default function StudentsView() {
             })}
             {students.length === 0 && !isLoading && (
               <tr>
-                <td colSpan={7} style={{ textAlign: 'center', padding: '36px', color: 'var(--text-dim)' }}>
+                <td colSpan={7} style={{ textAlign: 'center', padding: '36px', color: 'var(--text-muted)' }}>
                   No students found matching the query.
                 </td>
               </tr>
@@ -390,7 +390,7 @@ export default function StudentsView() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 padding: '12px',
-                boxShadow: 'var(--shadow-glow-indigo)',
+                border: '1px solid var(--border-color)',
               }}
             >
               {/* QR representation */}

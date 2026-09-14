@@ -416,6 +416,18 @@ html, body {
   border-color: var(--border-color);
 }
 
+.badge-info {
+  background-color: #eff6ff;
+  color: #1e40af;
+  border-color: #bfdbfe;
+}
+
+.badge-warning {
+  background-color: var(--warning-bg);
+  color: var(--warning-text);
+  border-color: var(--warning-border);
+}
+
 /* Forms & Inputs */
 .form-group {
   display: flex;
